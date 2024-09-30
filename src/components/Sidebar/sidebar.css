@@ -1,0 +1,109 @@
+/* Sidebar.css */
+.sidebar {
+    position: fixed;
+    left: -300px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 300px;
+    height: 75vh;
+    background: linear-gradient(145deg, #111111, #1c1c3c);
+    border-radius: 10px;
+    transition: all 0.5s ease;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    color: white;
+    z-index: 1000;
+  }
+  
+  .sidebar.open {
+    left: 0;
+  }
+  
+  .sidebar-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .sidebar-content h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    color: #00d1ff;
+    margin-bottom: 5px;
+  }
+  
+  .sidebar-content h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    color: #ffcc00;
+    margin-bottom: 30px;
+  }
+  
+  .menu-items {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .menu-item {
+    background-color: transparent;
+    border: 2px solid #00d1ff;
+    color: #00d1ff;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .menu-item:hover {
+    background-color: #00d1ff;
+    color: #000;
+  }
+  
+  .icons {
+    margin-top: 1px;
+    width: 100%;
+  }
+  
+  .icon {
+    background-color: transparent;
+    border: 2px solid #ffcc00;
+    color: #ffcc00;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .icon:hover {
+    background-color: #ffcc00;
+    color: #000;
+  }
+  
+  .arrow-button {
+    position: absolute;
+    top: 50%;
+    right: -30px;
+    transform: translateY(-50%);
+    background-color: #00d1ff;
+    border: none;
+    color: #000;
+    padding: 10px 15px;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 0 15px #00d1ff;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .arrow-button:hover {
+    background-color: #00a3cc;
+    box-shadow: 0 0 20px #00d1ff;
+  }
+  

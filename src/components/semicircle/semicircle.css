@@ -1,0 +1,25 @@
+.semicircle-container {
+    position: fixed; /* Fixes the position relative to the window */
+    bottom: 0; /* Align to the bottom of the window */
+    left: 50%; /* Centers the container horizontally */
+    transform: translateX(-50%); /* Correct the horizontal centering */
+    width: 100vw; /* Set the width to 75% of the viewport */
+    height: 30vh; /* Set height to 20% of the viewport height */
+    overflow: hidden; /* Hide overflow to create the semicircle effect */
+  }
+  .semicircle-image {
+    width: 100%; /* Full width of the container */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 50% 50% 0 0; /* Create a semicircular effect */
+    object-fit: cover; /* Make sure the image covers the container */
+    transform: translateY(15%); /* Adjust to visually pull the image up for curvature */
+  }
+ 
+  .label {
+    font-size: 18px;
+    color: white;
+    background: white;
+    padding: 10px;
+    border-radius: 9px;
+  }
+  
