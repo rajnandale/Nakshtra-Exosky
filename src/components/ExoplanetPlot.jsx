@@ -3,8 +3,11 @@ import * as THREE from 'three';
 import CameraControls from './CameraControls.jsx';
 import Semicircle from './semicircle/Semicircle.jsx';
 import planetTexture from '../textures/00_earthmap1k.jpg';
-import starImage from '../textures/stars/circle.png';
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from 'prop-types';
+
+const CAMERA_INITIAL_POSITION = { x: 0, y: 0, z: 5 };
+const PLANET_SCALE_FACTOR = 1;
+const STAR_SCALE_FACTOR = 1000;
 
 const ExoplanetPlot = ({ exoplanetData, starData }) => {
   const sceneRef = useRef(null);
@@ -20,7 +23,22 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
   useEffect(() => {
     if (exoplanetData.length === 0 && starData.length === 0) return;
 
-    // Set up THREE.js scene
+    initializeScene();
+    return cleanupScene;
+  }, [exoplanetData, starData]);
+
+  useEffect(() => {
+    window.addEventListener('click', handleMouseClick);
+    return () => window.removeEventListener('click', handleMouseClick);
+  }, []);
+
+  useEffect(() => {
+    if (!sceneRef.current) return;
+    plotExoplanets();
+    plotStars().then(fetchStarInfo).then(applyThemeToStars);
+  }, [exoplanetData, starData]);
+
+  const initializeScene = () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 500);
     const renderer = new THREE.WebGLRenderer();
@@ -31,7 +49,7 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
     cameraRef.current = camera;
     rendererRef.current = renderer;
 
-    camera.position.set(0, 0, 5); // Set initial camera position
+    camera.position.set(CAMERA_INITIAL_POSITION.x, CAMERA_INITIAL_POSITION.y, CAMERA_INITIAL_POSITION.z);
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -40,17 +58,41 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
     };
 
     animate();
+  };
 
-    return () => {
-      // Cleanup resources
-      document.body.removeChild(renderer.domElement);
-      // Dispose of THREE.js objects
-      renderer.dispose();
-      sceneRef.current = null;
-      cameraRef.current = null;
-      rendererRef.current = null;
-    };
-  }, [exoplanetData, starData]);
+  const cleanupScene = () => {
+    if (rendererRef.current) {
+      document.body.removeChild(rendererRef.current.domElement);
+      rendererRef.current.dispose();
+    }
+    sceneRef.current = null;
+    cameraRef.current = null;
+    rendererRef.current = null;
+  };
+
+  const handleMouseClick = (event) => {
+    if (!cameraRef.current || !sceneRef.current) return;
+
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2(
+      (event.clientX / window.innerWidth) * 2 - 1,
+      -(event.clientY / window.innerHeight) * 2 + 1
+    );
+
+    raycaster.setFromCamera(mouse, cameraRef.current);
+    const intersects = raycaster.intersectObjects(sceneRef.current.children);
+
+    if (intersects.length > 0) {
+      const selected = intersects[0].object;
+      const planetName = selected.userData.planetName;
+      moveCameraToPlanet(selected);
+      updateLabel(planetName);
+    } else {
+      if (labelRef.current) {
+        labelRef.current.style.display = 'none';
+      }
+    }
+  };
 
   const moveCameraToPlanet = (planet) => {
     setShowSemicircle(false);
@@ -98,85 +140,82 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
     labelDiv.style.transform = 'translateX(-50%)';
   };
 
-  useEffect(() => {
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-
-    const onMouseClick = (event) => {
-      if (!cameraRef.current || !sceneRef.current) return;
-
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, cameraRef.current);
-
-      const intersects = raycaster.intersectObjects(sceneRef.current.children);
-      if (intersects.length > 0) {
-        const selected = intersects[0].object;
-        const planetName = selected.userData.planetName;
-
-        moveCameraToPlanet(selected);
-        updateLabel(planetName);
-      } else {
-        if (labelRef.current) {
-          labelRef.current.style.display = 'none';
-        }
-      }
-    };
-
-    window.addEventListener('click', onMouseClick);
-
-    return () => {
-      window.removeEventListener('click', onMouseClick);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!sceneRef.current) return;
-
-    const scene = sceneRef.current;
+  const plotExoplanets = () => {
     const textureLoader = new THREE.TextureLoader();
-
-    // Load planet texture properly
     textureLoader.load(planetTexture, (loadedTexture) => {
       const planetMaterial = new THREE.MeshBasicMaterial({ map: loadedTexture });
 
-      const planetScaleFactor = 1;
-
-      // Plot Exoplanets with the loaded texture
       exoplanetData.forEach(({ planet_name, x, y, z }) => {
-        const exoplanetGeometry = new THREE.SphereGeometry(0.2, 32, 32);
-        const exoplanet = new THREE.Mesh(exoplanetGeometry, planetMaterial);
-
-        // Ensure x, y, z are valid before setting position
         if (typeof x === 'number' && typeof y === 'number' && typeof z === 'number') {
-          exoplanet.position.set(x * planetScaleFactor, y * planetScaleFactor, z * planetScaleFactor);
+          const exoplanetGeometry = new THREE.SphereGeometry(0.2, 32, 32);
+          const exoplanet = new THREE.Mesh(exoplanetGeometry, planetMaterial);
+          exoplanet.position.set(x * PLANET_SCALE_FACTOR, y * PLANET_SCALE_FACTOR, z * PLANET_SCALE_FACTOR);
           exoplanet.userData.planetName = planet_name;
-          scene.add(exoplanet);
+          sceneRef.current.add(exoplanet);
           exoplanetsRef.current.push(exoplanet);
         } else {
           console.warn('Invalid exoplanet position data:', { x, y, z });
         }
       });
     });
+  };
 
-    // Plot Stars similarly
-    const starTexture = textureLoader.load(starImage);
-    starData.forEach((star) => {
-      const geometry = new THREE.SphereGeometry(0.05, 24, 24);
-      const material = new THREE.MeshBasicMaterial({ map: starTexture, transparent: true });
-      const starMesh = new THREE.Mesh(geometry, material);
+  const plotStars = () => {
+    return Promise.all(starData.map((star) => {
+      return new Promise((resolve, reject) => {
+        if (typeof star.x === 'number' && typeof star.y === 'number' && typeof star.z === 'number') {
+          const geometry = new THREE.SphereGeometry(0.05, 24, 24); // Default star size, will be updated later
+          const material = new THREE.MeshBasicMaterial({ color: 0xffffff }); // Default white color
+          const starMesh = new THREE.Mesh(geometry, material);
+          starMesh.position.set(star.x * STAR_SCALE_FACTOR, star.y * STAR_SCALE_FACTOR, star.z * STAR_SCALE_FACTOR);
+          starMesh.userData.starName = star.star_name;
+          sceneRef.current.add(starMesh);
+          starsRef.current.push(starMesh);
+          resolve(starMesh);
+        } else {
+          console.warn('Invalid star position data:', star);
+          reject(new Error('Invalid star position data'));
+        }
+      });
+    }));
+  };
 
-      const starScaleFactor = 1000;
-      if (typeof star.x === 'number' && typeof star.y === 'number' && typeof star.z === 'number') {
-        starMesh.position.set(star.x * starScaleFactor, star.y * starScaleFactor, star.z * starScaleFactor);
-        scene.add(starMesh);
-        starsRef.current.push(starMesh);
-      } else {
-        console.warn('Invalid star position data:', star);
+  const fetchStarInfo = (stars) => {
+    return Promise.all(stars.map((star) => {
+      return fetch(`http://localhost:5000/get_stars_info?name=${star.userData.starName}`)
+        .then((response) => response.json())
+        .then((data) => {
+          star.userData.info = data;
+          console.log(`Info for ${star.userData.starName}:`, data);
+          return star;
+        })
+        .catch((error) => {
+          console.error('Error fetching star info:', error);
+          return null;
+        });
+    }));
+  };
+
+  const applyThemeToStars = (stars) => {
+    stars.forEach((star) => {
+      if (star && star.userData.info) {
+        const { color_index, magnitude } = star.userData.info;
+
+        // Adjust size based on magnitude (smaller magnitude = larger star)
+        const scaleFactor = 1 / (magnitude + 1);
+        star.scale.set(scaleFactor, scaleFactor, scaleFactor);
+
+        // Adjust color based on color index (using HSL for smooth color transitions)
+        const color = new THREE.Color(`hsl(${(1 - color_index) * 240}, 100%, 50%)`);
+        star.material.color = color;
+
+        // Adjust brightness/intensity based on magnitude (brighter stars are more opaque)
+        star.material.opacity = Math.min(1, 2 / (magnitude + 1));
+        star.material.transparent = true;
+        star.material.needsUpdate = true;
       }
     });
-  }, [exoplanetData, starData]);
+  };
 
   return (
     <>
@@ -190,8 +229,22 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
 
 // PropTypes validation
 ExoplanetPlot.propTypes = {
-  exoplanetData: PropTypes.array.isRequired,
-  starData: PropTypes.array.isRequired,
+  exoplanetData: PropTypes.arrayOf(
+    PropTypes.shape({
+      planet_name: PropTypes.string.isRequired,
+      x: PropTypes.number.isRequired,
+      y: PropTypes.number.isRequired,
+      z: PropTypes.number.isRequired,
+    })
+  ).isRequired,
+  starData: PropTypes.arrayOf(
+    PropTypes.shape({
+      star_name: PropTypes.string.isRequired,
+      x: PropTypes.number.isRequired,
+      y: PropTypes.number.isRequired,
+      z: PropTypes.number.isRequired,
+    })
+  ).isRequired,
 };
 
 export default ExoplanetPlot;

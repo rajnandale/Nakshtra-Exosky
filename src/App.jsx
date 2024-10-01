@@ -8,7 +8,7 @@ const App = () => {
   const [starData, setStarData] = useState([]);
 
   useEffect(() => {
-    fetch('https://exoskyapi.vercel.app/get_objects')
+    fetch('http://localhost:5000/get_objects')
       .then((response) => response.json())
       .then((data) => {
         const exoplanetData = data
