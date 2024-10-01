@@ -182,7 +182,7 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
 
   const fetchStarInfo = (stars) => {
     return Promise.all(stars.map((star) => {
-      return fetch(`http://localhost:5000/get_stars_info?name=${star.userData.starName}`)
+      return fetch(`https://exoskyapi.vercel.app/get_stars_info?name=${star.userData.starName}`)
         .then((response) => response.json())
         .then((data) => {
           star.userData.info = data;
