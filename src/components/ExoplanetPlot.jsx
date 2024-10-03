@@ -2,14 +2,14 @@ import { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
 import CameraControls from './CameraControls.jsx';
 import Semicircle from './semicircle/Semicircle.jsx';
-import planetTexture from '../textures/00_earthmap1k.jpg';
 import PropTypes from 'prop-types';
+import { ViewPlanet, setViewPlanet } from '../global'; // Import global variable and setter
 
 const CAMERA_INITIAL_POSITION = { x: 0, y: 0, z: 5 };
 const PLANET_SCALE_FACTOR = 1;
 const STAR_SCALE_FACTOR = 1000;
 
-const ExoplanetPlot = ({ exoplanetData, starData }) => {
+const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick }) => {
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const rendererRef = useRef(null);
@@ -18,7 +18,6 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
   const starsRef = useRef([]);
   const labelRef = useRef(null);
   const [showSemicircle, setShowSemicircle] = useState(true);
-  const [selectedPlanetTexture, setSelectedPlanetTexture] = useState(new THREE.TextureLoader().load(planetTexture));
 
   useEffect(() => {
     if (exoplanetData.length === 0 && starData.length === 0) return;
@@ -35,8 +34,18 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
   useEffect(() => {
     if (!sceneRef.current) return;
     plotExoplanets();
-    plotStars().then(fetchStarInfo).then(applyThemeToStars);
+    plotStars().then(fetchAllStarsInfo).then(applyThemeToStars);
   }, [exoplanetData, starData]);
+
+  useEffect(() => {
+    if (ViewPlanet) {
+      const selectedPlanet = exoplanetsRef.current.find(planet => planet.userData.planetName === ViewPlanet);
+      if (selectedPlanet) {
+        moveCameraToPlanet(selectedPlanet);
+        updateLabel(ViewPlanet);
+      }
+    }
+  }, [ViewPlanet]);
 
   const initializeScene = () => {
     const scene = new THREE.Scene();
@@ -53,7 +62,6 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
 
     const animate = () => {
       requestAnimationFrame(animate);
-      exoplanetsRef.current.forEach((planet) => planet.rotation.y += 0.01);
       renderer.render(scene, camera);
     };
 
@@ -87,6 +95,10 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
       const planetName = selected.userData.planetName;
       moveCameraToPlanet(selected);
       updateLabel(planetName);
+      setViewPlanet(planetName); // Update global variable
+      if (onPlanetClick) {
+        onPlanetClick(planetName); // Call onPlanetClick with the selected planet name
+      }
     } else {
       if (labelRef.current) {
         labelRef.current.style.display = 'none';
@@ -107,7 +119,6 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
         requestAnimationFrame(animateCamera);
       } else {
         setShowSemicircle(true);
-        setSelectedPlanetTexture(planet.material.map);
       }
     };
 
@@ -141,22 +152,19 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
   };
 
   const plotExoplanets = () => {
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(planetTexture, (loadedTexture) => {
-      const planetMaterial = new THREE.MeshBasicMaterial({ map: loadedTexture });
+    const planetMaterial = new THREE.MeshBasicMaterial({ visible: false }); // Invisible material
 
-      exoplanetData.forEach(({ planet_name, x, y, z }) => {
-        if (typeof x === 'number' && typeof y === 'number' && typeof z === 'number') {
-          const exoplanetGeometry = new THREE.SphereGeometry(0.2, 32, 32);
-          const exoplanet = new THREE.Mesh(exoplanetGeometry, planetMaterial);
-          exoplanet.position.set(x * PLANET_SCALE_FACTOR, y * PLANET_SCALE_FACTOR, z * PLANET_SCALE_FACTOR);
-          exoplanet.userData.planetName = planet_name;
-          sceneRef.current.add(exoplanet);
-          exoplanetsRef.current.push(exoplanet);
-        } else {
-          console.warn('Invalid exoplanet position data:', { x, y, z });
-        }
-      });
+    exoplanetData.forEach(({ planet_name, x, y, z }) => {
+      if (typeof x === 'number' && typeof y === 'number' && typeof z === 'number') {
+        const exoplanetGeometry = new THREE.SphereGeometry(0.2, 32, 32);
+        const exoplanet = new THREE.Mesh(exoplanetGeometry, planetMaterial);
+        exoplanet.position.set(x * PLANET_SCALE_FACTOR, y * PLANET_SCALE_FACTOR, z * PLANET_SCALE_FACTOR);
+        exoplanet.userData.planetName = planet_name;
+        sceneRef.current.add(exoplanet);
+        exoplanetsRef.current.push(exoplanet);
+      } else {
+        console.warn('Invalid exoplanet position data:', { x, y, z });
+      }
     });
   };
 
@@ -180,36 +188,58 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
     }));
   };
 
-  const fetchStarInfo = (stars) => {
-    return Promise.all(stars.map((star) => {
-      return fetch(`https://exoskyapi.vercel.app/get_stars_info?name=${star.userData.starName}`)
-        .then((response) => response.json())
-        .then((data) => {
-          star.userData.info = data;
-          console.log(`Info for ${star.userData.starName}:`, data);
-          return star;
-        })
-        .catch((error) => {
-          console.error('Error fetching star info:', error);
-          return null;
+  const fetchAllStarsInfo = () => {
+    return fetch('https://exoskyapi.vercel.app/get_all_stars')
+      .then((response) => response.json())
+      .then((data) => {
+        data.forEach((starInfo) => {
+          const star = starsRef.current.find(s => s.userData.starName === starInfo.star_name);
+          if (star) {
+            star.userData.info = starInfo;
+          }
         });
-    }));
+        return starsRef.current;
+      })
+      .catch((error) => {
+        console.error('Error fetching all stars info:', error);
+        return [];
+      });
   };
 
   const applyThemeToStars = (stars) => {
     stars.forEach((star) => {
       if (star && star.userData.info) {
-        const { color_index, magnitude } = star.userData.info;
-
+        const { spectral_type, color_index, magnitude } = star.userData.info;
+  
         // Adjust size based on magnitude (smaller magnitude = larger star)
         const scaleFactor = 1 / (magnitude + 1);
         star.scale.set(scaleFactor, scaleFactor, scaleFactor);
-
-        // Adjust color based on color index (using HSL for smooth color transitions)
-        const color = new THREE.Color(`hsl(${(1 - color_index) * 240}, 100%, 50%)`);
+  
+        // Function to map spectral type (OBAFGKM) to a base color
+        const getColorFromSpectralType = (spectralType) => {
+          if (spectralType <= 30000) return 0x9bb0ff; // O-type (blue)
+          if (spectralType <= 10000) return 0xaabfff; // B-type (blue-white)
+          if (spectralType <= 7500) return 0xcad7ff;  // A-type (white)
+          if (spectralType <= 6000) return 0xf8f7ff;  // F-type (yellow-white)
+          if (spectralType <= 5200) return 0xfff4e8;  // G-type (yellow)
+          if (spectralType <= 3700) return 0xffddb4;  // K-type (orange)
+          return 0xffcc6f; // M-type (red)
+        };
+  
+        // Function to adjust the color based on color index (blue/red shift)
+        const adjustColorByIndex = (baseColor, colorIndex) => {
+          const color = new THREE.Color(baseColor);
+          color.offsetHSL(colorIndex / 10, 0, 0); // Adjust hue based on color index
+          return color;
+        };
+  
+        // Get base color from spectral type
+        const baseColor = getColorFromSpectralType(spectral_type);
+        // Apply color index adjustment
+        const color = adjustColorByIndex(baseColor, color_index);
         star.material.color = color;
-
-        // Adjust brightness/intensity based on magnitude (brighter stars are more opaque)
+  
+        // Adjust opacity based on magnitude (brighter stars are more opaque)
         star.material.opacity = Math.min(1, 2 / (magnitude + 1));
         star.material.transparent = true;
         star.material.needsUpdate = true;
@@ -222,7 +252,7 @@ const ExoplanetPlot = ({ exoplanetData, starData }) => {
       {cameraRef.current && rendererRef.current && (
         <CameraControls camera={cameraRef.current} renderer={rendererRef.current} controlsRef={controlsRef} />
       )}
-      {showSemicircle && <Semicircle texture={selectedPlanetTexture} />}
+      {showSemicircle && <Semicircle />}
     </>
   );
 };
@@ -245,6 +275,7 @@ ExoplanetPlot.propTypes = {
       z: PropTypes.number.isRequired,
     })
   ).isRequired,
+  onPlanetClick: PropTypes.func,
 };
 
 export default ExoplanetPlot;

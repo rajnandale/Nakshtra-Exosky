@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+/* RightPanel.css */
+.right-panel {
+    position: fixed; /* Fixed positioning for the right panel */
+    right: 20px; /* Positioning from the right side */
+    top: 50%; /* Positioning from the top */
+    transform: translateY(-50%); /* Centering vertically */
+    background: linear-gradient(145deg, #111111, #1c1c3c); /* Matching background */
+    padding: 20px; /* Padding around the content */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4); /* Shadow effect */
+    border: 2px solid #00d1ff; /* Border matching the other buttons */
+    color: #00d1ff; /* Text color */
+    z-index: 1000; /* Keep it above other elements */
+  }
+  
+  /* Reusing existing button styles for the new button */
+  .draw-constellation-btn,
+  .screenshot-btn,
+  .constellation-mode-toggle {
+    padding: 8px 16px;
+    margin-top: 10px; /* Add margin for spacing */
+    border: 2px solid #00d1ff;
+    background-color: transparent;
+    color: #00d1ff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .draw-constellation-btn:hover,
+  .screenshot-btn:hover,
+  .constellation-mode-toggle:hover {
+    background-color: #00d1ff;
+    color: #000;
+  }
+  
+/* Header styles */
+h2, h3 {
+  color: #00d1ff;
+  font-family: 'Orbitron', sans-serif;
+  margin-bottom: 10px;
+}
+
+/* Selected planets list styles */
+.selected-planets-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.selected-planets-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.selected-planets-list span {
+  font-family: 'Orbitron', sans-serif;
+  color: #00d1ff;
+}
+
+.selected-planets-list button {
+  background-color: transparent;
+  color: #00d1ff;
+  padding: 5px;
+  border: 1px solid #00d1ff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Orbitron', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.selected-planets-list button:hover {
+  background-color: #00d1ff;
+  color: #000;
+}

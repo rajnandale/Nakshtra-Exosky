@@ -1,23 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './SearchBar.css';
+import PropTypes from 'prop-types';
+import { setViewPlanet } from '../../global'; // Import global variable setter
 
-const SearchBar = () => {
+const SearchBar = ({ onSearch }) => { // Add onSearch prop
   const [searchTerm, setSearchTerm] = useState('');
-  const [options] = useState([
-    'Earth',
-    'Sun',
-    'Moon',
-    'Mercury',
-    'Jupiter',
-    'Saturn',
-  ]);
+  const [options, setOptions] = useState([]); // Initialize as an empty array to store fetched planet names
   const [filteredOptions, setFilteredOptions] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Toggle dropdown menu visibility
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+  // Fetch exoplanet names from the backend when the component mounts
+  useEffect(() => {
+    const fetchExoplanetNames = async () => {
+      try {
+        const response = await fetch('http://exoskyapi.vercel.app/get_exoplanets_names'); // Replace with your API URL
+        
+        // Check if the response is successful
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        const data = await response.json(); // Parse the response as JSON
+        const planetNames = data.map((planet) => planet.pl_name); // Extract planet names from the response
+        setOptions(planetNames); // Set the options with the fetched planet names
+      } catch (error) {
+        console.error('Error fetching exoplanet names:', error); // Log any errors
+      }
+    };
+  
+    fetchExoplanetNames(); // Call the function to fetch the data
+  }, []);
+  
 
   // Handle input changes for search functionality
   const handleInputChange = (event) => {
@@ -39,20 +52,32 @@ const SearchBar = () => {
   const handleOptionClick = (option) => {
     setSearchTerm(option);
     setFilteredOptions([]);
+    setViewPlanet(option); // Update global variable
+    onSearch(option); // Call onSearch with the selected option
+  };
+
+  // Handle search button click
+  const handleSearch = () => {
+    setViewPlanet(searchTerm); // Update global variable
+    onSearch(searchTerm); // Call onSearch with the search term
+  };
+
+  // Toggle dropdown menu visibility for profile
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   return (
     <div className="search-bar-container">
       <div className="search-bar">
-        {/* Dropdown for celestial objects */}
-        <select className="dropdown">
+        {/* Dropdown populated with fetched planet names */}
+        <select className="dropdown" value={searchTerm} onChange={handleInputChange}>
           <option value="">Select</option>
-          <option value="Earth">Earth</option>
-          <option value="Sun">Sun</option>
-          <option value="Moon">Moon</option>
-          <option value="Mercury">Mercury</option>
-          <option value="Jupiter">Jupiter</option>
-          <option value="Saturn">Saturn</option>
+          {options.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
         </select>
 
         {/* Search input */}
@@ -63,7 +88,7 @@ const SearchBar = () => {
           onChange={handleInputChange}
           placeholder="Search..."
         />
-        <button className="search-button">Search</button>
+        <button className="search-button" onClick={handleSearch}>Search</button>
 
         {/* Profile section */}
         <div>
@@ -111,6 +136,11 @@ const SearchBar = () => {
       )}
     </div>
   );
+};
+
+// PropTypes validation
+SearchBar.propTypes = {
+  onSearch: PropTypes.func.isRequired, // Add PropTypes validation for onSearch
 };
 
 export default SearchBar;
