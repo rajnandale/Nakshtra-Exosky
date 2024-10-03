@@ -13,7 +13,7 @@ const SearchBar = ({ onSearch }) => { // Add onSearch prop
   useEffect(() => {
     const fetchExoplanetNames = async () => {
       try {
-        const response = await fetch('http://localhost:5000/get_planets_names'); // Replace with your API URL
+        const response = await fetch('https://exoskyapi.vercel.app/get_planets_names'); // Replace with your API URL
         
         // Check if the response is successful
         if (!response.ok) {

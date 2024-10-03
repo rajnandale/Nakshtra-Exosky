@@ -26,7 +26,7 @@ const Sidebar = ({ selectedPlanet }) => {
   // Fetch planet info when selectedPlanet changes
   useEffect(() => {
     if (selectedPlanet) {
-      fetch(`http://localhost:5000/get_exoplanets_info?planet_name=${selectedPlanet}`)
+      fetch(`https://exoskyapi.vercel.app/get_exoplanets_info?planet_name=${selectedPlanet}`)
         .then((response) => response.json())
         .then((data) => setPlanetInfo(data))
         .catch((error) => console.error('Error fetching planet info:', error));
