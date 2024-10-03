@@ -3,12 +3,16 @@ import './App.css';
 import ExoplanetPlot from './components/ExoplanetPlot.jsx';
 import SearchBar from './components/SearchBar/SearchBar';
 import Sidebar from './components/Sidebar/Sidebar';
-import { ViewPlanet, setViewPlanet } from './global'; // Import global variable and setter
+import { ViewPlanet, setViewPlanet } from './global';
+import IntroContainer from './components/IntroContainer/IntroContainer.jsx';
+import loadingImage from './components/IntroContainer/rocket_loading.png';
 
 const App = () => {
   const [exoplanetData, setExoplanetData] = useState([]);
   const [starData, setStarData] = useState([]);
-  const [selectedPlanet, setSelectedPlanet] = useState(ViewPlanet); // Initialize with global variable
+  const [selectedPlanet, setSelectedPlanet] = useState(ViewPlanet);
+  const [dataReady, setDataReady] = useState(false);
+  const [plotReady, setPlotReady] = useState(false); // New state for plot readiness
 
   useEffect(() => {
     fetch('https://exoskyapi.vercel.app/get_objects')
@@ -33,31 +37,46 @@ const App = () => {
             z: star.z,
           }));
         setStarData(starData);
+        setDataReady(true);
       })
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
   useEffect(() => {
-    setSelectedPlanet(ViewPlanet); // Update selected planet when global variable changes
+    setSelectedPlanet(ViewPlanet);
   }, [ViewPlanet]);
 
   const handlePlanetClick = (planetName) => {
-    setViewPlanet(planetName); // Update global variable
-    setSelectedPlanet(planetName); // Update local state
+    setViewPlanet(planetName);
+    setSelectedPlanet(planetName);
   };
 
   return (
     <div className="app-container">
-      <SearchBar onSearch={handlePlanetClick} /> {/* Pass search handler to SearchBar */}
-      <Sidebar selectedPlanet={selectedPlanet} /> {/* Pass selected planet to Sidebar */}
-      <div className="exoplanet-plot-section">
-        <ExoplanetPlot 
-          exoplanetData={exoplanetData} 
-          starData={starData} 
-          onPlanetClick={handlePlanetClick} // Pass click handler to ExoplanetPlot
-          selectedPlanet={selectedPlanet} // Pass selected planet to ExoplanetPlot
-        />
-      </div>
+      <SearchBar onSearch={handlePlanetClick} setDataReady={setDataReady} />
+      {!dataReady ? (
+        <div className="loading-container">
+          <img src={loadingImage} alt="Loading..." />
+        </div>
+      ) : (
+        <>
+          <Sidebar selectedPlanet={selectedPlanet} />
+          <div className="exoplanet-plot-section">
+            {!plotReady ? ( // Show loading until plot is ready
+              <div className="loading-container">
+                <img src={loadingImage} alt="Loading plot..." />
+              </div>
+            ) : null}
+            <ExoplanetPlot 
+              exoplanetData={exoplanetData} 
+              starData={starData} 
+              onPlanetClick={handlePlanetClick} 
+              selectedPlanet={selectedPlanet} 
+              setPlotReady={setPlotReady} // Pass setter for plot readiness
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

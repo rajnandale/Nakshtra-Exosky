@@ -3,7 +3,7 @@ import './SearchBar.css';
 import PropTypes from 'prop-types';
 import { setViewPlanet } from '../../global'; // Import global variable setter
 
-const SearchBar = ({ onSearch }) => { // Add onSearch prop
+const SearchBar = ({ onSearch, setDataReady }) => { // Add setDataReady prop
   const [searchTerm, setSearchTerm] = useState('');
   const [options, setOptions] = useState([]); // Initialize as an empty array to store fetched planet names
   const [filteredOptions, setFilteredOptions] = useState([]);
@@ -22,14 +22,14 @@ const SearchBar = ({ onSearch }) => { // Add onSearch prop
   
         const data = await response.json(); // Parse the response as JSON
         setOptions(data); // Set the options with the fetched planet names
+        setDataReady(true); // Set dataReady to true when data is received
       } catch (error) {
         console.error('Error fetching exoplanet names:', error); // Log any errors
       }
     };
   
     fetchExoplanetNames(); // Call the function to fetch the data
-  }, []);
-  
+  }, [setDataReady]); // Add setDataReady to the dependency array
 
   // Handle input changes for search functionality
   const handleInputChange = (event) => {
@@ -138,6 +138,7 @@ const SearchBar = ({ onSearch }) => { // Add onSearch prop
 // PropTypes validation
 SearchBar.propTypes = {
   onSearch: PropTypes.func.isRequired, // Add PropTypes validation for onSearch
+  setDataReady: PropTypes.func.isRequired, // Add PropTypes validation for setDataReady
 };
 
 export default SearchBar;

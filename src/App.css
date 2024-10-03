@@ -1,3 +1,16 @@
 body {
     background-color: #000000;
 }
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+  }
+  
+  .loading-container img {
+    margin: auto;
+    width: 100px; /* Adjust the width as needed */
+  height: auto; /* Maintain aspect ratio */
+  }

@@ -9,7 +9,7 @@ const CAMERA_INITIAL_POSITION = { x: 0, y: 0, z: 5 };
 const PLANET_SCALE_FACTOR = 1;
 const STAR_SCALE_FACTOR = 1000;
 
-const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick }) => {
+const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady }) => {
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const rendererRef = useRef(null);
@@ -34,7 +34,12 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick }) => {
   useEffect(() => {
     if (!sceneRef.current) return;
     plotExoplanets();
-    plotStars().then(fetchAllStarsInfo).then(applyThemeToStars);
+    plotStars()
+      .then(fetchAllStarsInfo)
+      .then(applyThemeToStars)
+      .then(() => {
+        setPlotReady(true); // Set plot ready after animation rendering is complete
+      });
   }, [exoplanetData, starData]);
 
   useEffect(() => {
@@ -119,6 +124,7 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick }) => {
         requestAnimationFrame(animateCamera);
       } else {
         setShowSemicircle(true);
+        setPlotReady(true); // Set plotReady to true after animation
       }
     };
 
@@ -276,6 +282,7 @@ ExoplanetPlot.propTypes = {
     })
   ).isRequired,
   onPlanetClick: PropTypes.func,
+  setPlotReady: PropTypes.func.isRequired,
 };
 
 export default ExoplanetPlot;
