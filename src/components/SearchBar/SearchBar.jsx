@@ -13,7 +13,7 @@ const SearchBar = ({ onSearch }) => { // Add onSearch prop
   useEffect(() => {
     const fetchExoplanetNames = async () => {
       try {
-        const response = await fetch('http://exoskyapi.vercel.app/get_exoplanets_names'); // Replace with your API URL
+        const response = await fetch('http://localhost:5000/get_planets_names'); // Replace with your API URL
         
         // Check if the response is successful
         if (!response.ok) {
@@ -21,8 +21,7 @@ const SearchBar = ({ onSearch }) => { // Add onSearch prop
         }
   
         const data = await response.json(); // Parse the response as JSON
-        const planetNames = data.map((planet) => planet.pl_name); // Extract planet names from the response
-        setOptions(planetNames); // Set the options with the fetched planet names
+        setOptions(data); // Set the options with the fetched planet names
       } catch (error) {
         console.error('Error fetching exoplanet names:', error); // Log any errors
       }
@@ -37,11 +36,9 @@ const SearchBar = ({ onSearch }) => { // Add onSearch prop
     const value = event.target.value;
     setSearchTerm(value);
 
-    // Filter options based on input
+    // Filter options locally based on input
     if (value) {
-      const filtered = options.filter((option) =>
-        option.toLowerCase().includes(value.toLowerCase())
-      );
+      const filtered = options.filter(option => option.toLowerCase().includes(value.toLowerCase()));
       setFilteredOptions(filtered);
     } else {
       setFilteredOptions([]);
