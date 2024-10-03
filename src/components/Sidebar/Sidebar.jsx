@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import './Sidebar.css'; // Import the CSS for styling
-import PropTypes from 'prop-types';
-import { ViewPlanet } from '../../global'; // Import global variable
+import Encyclopedia from '../Encyclopedia/Encyclopedia.jsx';  // Import the Encyclopedia component
+import PropTypes from 'prop-types'; // Import PropTypes
 
-const Sidebar = ({ selectedPlanet }) => {
+const Sidebar = ({ selectedPlanet }) => {  // Add selectedPlanet as a prop
   const [isOpen, setIsOpen] = useState(false);
   const [showEncyclopedia, setShowEncyclopedia] = useState(false);  // New state to toggle Encyclopedia
   const [planetInfo, setPlanetInfo] = useState(null); // State to store planet info
@@ -36,52 +36,18 @@ const Sidebar = ({ selectedPlanet }) => {
   return (
     <div className={`sidebar ${isOpen ? 'open' : ''}`}>
       {showEncyclopedia ? (
-        // Show Encyclopedia content when button is clicked
-        <div className="encyclopedia-container">
-          <button className="back-btn" onClick={handleBackToSidebar}>
-            Back
-          </button>
-          {/* {planetInfo ? (
-            <pre>{JSON.stringify(planetInfo, null, 2)}</pre> // Display raw JSON data
-          ) : (
-            <p>Loading...</p>
-          )} */}
-         {planetInfo ? (
-  <div className="planet-info">
-    <h3 className="planet-name">{planetInfo[0]?.pl_name}</h3>
-    <div className="planet-details">
-      <p><span className="detail-label">Right Ascension (RA):</span> {planetInfo[0]?.ra}</p>
-      <p><span className="detail-label">Declination (DEC):</span> {planetInfo[0]?.dec}</p>
-      <p><span className="detail-label">Distance:</span> {planetInfo[0]?.sy_dist} light years</p>
-      <p><span className="detail-label">Planet Mass:</span> {planetInfo[0]?.pl_masse} Earth masses</p>
-      <p><span className="detail-label">Orbital Semi-major Axis:</span> {planetInfo[0]?.pl_orbsmax} AU</p>
-      <p><span className="detail-label">Magnitude:</span> {planetInfo[0]?.sy_gaiamag}</p>
-    </div>
-  </div>
-) : (
-  <p>Loading...</p>
-)}
-
-        </div>
+        <Encyclopedia planetInfo={planetInfo} onBack={handleBackToSidebar} />  // Pass planetInfo to Encyclopedia
       ) : (
-        // Show default sidebar content when Encyclopedia is not open
         <div className="sidebar-content">
-          <h2>{ViewPlanet || 'SUN'}</h2> {/* Display selected planet or default to SUN */}
+          <h2>{selectedPlanet || 'SUN'}</h2>  {/* Display selected planet or default to SUN */}
           <h3>YELLOW DWARF</h3>
           <div className="menu-items">
             <button className="menu-item">VISIT</button>
-            <button className="menu-item" onClick={openEncyclopedia}>ENCYCLOPEDIA</button> {/* Open Encyclopedia */}
+            <button className="menu-item" onClick={openEncyclopedia}>ENCYCLOPEDIA</button>
             <button className="menu-item">STRUCTURE</button>
           </div>
-          {/* <div className="icons">
-            <div className="menu-item">SWITCH PLANET</div>
-            <div className="menu-item">NIGHT SKY</div>
-            <div className="menu-item">SOLAR SYSTEM</div>
-          </div> */}
         </div>
       )}
-
-      {/* Sidebar Toggle Button */}
       <div className="arrow-button" onClick={toggleSidebar}>
         {isOpen ? '<<' : '>>'}
       </div>
@@ -91,7 +57,7 @@ const Sidebar = ({ selectedPlanet }) => {
 
 // PropTypes validation
 Sidebar.propTypes = {
-  selectedPlanet: PropTypes.string, // Add PropTypes validation for selectedPlanet
+  selectedPlanet: PropTypes.string.isRequired, // Ensure selectedPlanet is required
 };
 
 export default Sidebar;

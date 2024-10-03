@@ -5,14 +5,24 @@ import SearchBar from './components/SearchBar/SearchBar';
 import Sidebar from './components/Sidebar/Sidebar';
 import { ViewPlanet, setViewPlanet } from './global';
 import IntroContainer from './components/IntroContainer/IntroContainer.jsx';
-import loadingImage from './components/IntroContainer/rocket_loading.png';
+import RightPanel from './components/RightPanel/RightPanel.jsx';
+import loadingImage from './assets/rocket_loading.png';
+import drawIcon from './assets/constillation.png';
 
 const App = () => {
   const [exoplanetData, setExoplanetData] = useState([]);
   const [starData, setStarData] = useState([]);
   const [selectedPlanet, setSelectedPlanet] = useState(ViewPlanet);
   const [dataReady, setDataReady] = useState(false);
-  const [plotReady, setPlotReady] = useState(false); // New state for plot readiness
+  const [plotReady, setPlotReady] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+  const [drawMode, setDrawMode] = useState(false);
+  const [isRightPanelVisible, setRightPanelVisible] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // New state for sidebar visibility
+
+  const handleClose = () => {
+    setShowIntro(false);
+  };
 
   useEffect(() => {
     fetch('https://exoskyapi.vercel.app/get_objects')
@@ -46,38 +56,87 @@ const App = () => {
     setSelectedPlanet(ViewPlanet);
   }, [ViewPlanet]);
 
+  // Handle planet clicks
   const handlePlanetClick = (planetName) => {
     setViewPlanet(planetName);
     setSelectedPlanet(planetName);
   };
 
+  const toggleDrawMode = () => {
+    setDrawMode(!drawMode);
+    setRightPanelVisible(!isRightPanelVisible);
+  };
+
+  // New function to toggle sidebar visibility
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
+  // Handle keydown events
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'ArrowRight') {
+        toggleSidebar(); // Open the sidebar
+      } else if (event.key === 'ArrowLeft') {
+        toggleSidebar(); // Close the sidebar
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   return (
-    <div className="app-container">
-      <SearchBar onSearch={handlePlanetClick} setDataReady={setDataReady} />
-      {!dataReady ? (
-        <div className="loading-container">
-          <img src={loadingImage} alt="Loading..." />
-        </div>
-      ) : (
-        <>
-          <Sidebar selectedPlanet={selectedPlanet} />
-          <div className="exoplanet-plot-section">
-            {!plotReady ? ( // Show loading until plot is ready
-              <div className="loading-container">
-                <img src={loadingImage} alt="Loading plot..." />
-              </div>
-            ) : null}
-            <ExoplanetPlot 
-              exoplanetData={exoplanetData} 
-              starData={starData} 
-              onPlanetClick={handlePlanetClick} 
-              selectedPlanet={selectedPlanet} 
-              setPlotReady={setPlotReady} // Pass setter for plot readiness
-            />
+    <>
+      <div className={`app-container ${showIntro ? 'blur-background' : ''}`}>
+        <SearchBar onSearch={handlePlanetClick} setDataReady={setDataReady} />
+        <button className="draw-button" onClick={toggleDrawMode}>
+          <img src={drawIcon} alt="Draw Mode" />
+        </button>
+        {!dataReady ? (
+          <div className="loading-container">
+            <img src={loadingImage} alt="Loading..." />
           </div>
-        </>
-      )}
-    </div>
+        ) : (
+          <>
+            <Sidebar selectedPlanet={selectedPlanet} isOpen={isSidebarOpen} /> {/* Pass isOpen to Sidebar */}
+            <div className="exoplanet-plot-section">
+              {!plotReady ? (
+                <div className="loading-container">
+                  <img src={loadingImage} alt="Loading plot..." />
+                </div>
+              ) : null}
+              {/* Uncomment when ready to use */}
+              <ExoplanetPlot 
+                exoplanetData={exoplanetData} 
+                starData={starData} 
+                onPlanetClick={handlePlanetClick} 
+                selectedPlanet={selectedPlanet} 
+                setPlotReady={setPlotReady} 
+              />
+            </div>
+            <RightPanel 
+              isConstellationMode={false} 
+              setIsConstellationMode={() => {}} 
+              handleScreenshot={() => {}} 
+              drawConstellation={() => {}} 
+              selectedPlanets={[]} 
+              removePlanet={() => {}} 
+              resetConstellations={() => {}} 
+              isOpen={isRightPanelVisible} // Pass isOpen to RightPanel
+            />
+          </>
+        )}
+      </div>
+      <div>
+        {showIntro && (
+          <IntroContainer onClose={handleClose} />
+        )}
+      </div>
+    </>
   );
 };
 

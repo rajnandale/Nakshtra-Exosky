@@ -6,7 +6,6 @@ import { setViewPlanet } from '../../global'; // Import global variable setter
 const SearchBar = ({ onSearch, setDataReady }) => { // Add setDataReady prop
   const [searchTerm, setSearchTerm] = useState('');
   const [options, setOptions] = useState([]); // Initialize as an empty array to store fetched planet names
-  const [filteredOptions, setFilteredOptions] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Fetch exoplanet names from the backend when the component mounts
@@ -21,7 +20,10 @@ const SearchBar = ({ onSearch, setDataReady }) => { // Add setDataReady prop
         }
   
         const data = await response.json(); // Parse the response as JSON
-        setOptions(data); // Set the options with the fetched planet names
+        
+        // Sort the data alphabetically and set options
+        const sortedData = data.sort((a, b) => a.localeCompare(b));
+        setOptions(sortedData); // Set the options with the fetched and sorted planet names
         setDataReady(true); // Set dataReady to true when data is received
       } catch (error) {
         console.error('Error fetching exoplanet names:', error); // Log any errors
@@ -35,20 +37,11 @@ const SearchBar = ({ onSearch, setDataReady }) => { // Add setDataReady prop
   const handleInputChange = (event) => {
     const value = event.target.value;
     setSearchTerm(value);
-
-    // Filter options locally based on input
-    if (value) {
-      const filtered = options.filter(option => option.toLowerCase().includes(value.toLowerCase()));
-      setFilteredOptions(filtered);
-    } else {
-      setFilteredOptions([]);
-    }
   };
 
-  // Handle option click for dropdown search options
-  const handleOptionClick = (option) => {
+  // Handle option selection from dropdown
+  const handleOptionSelect = (option) => {
     setSearchTerm(option);
-    setFilteredOptions([]);
     setViewPlanet(option); // Update global variable
     onSearch(option); // Call onSearch with the selected option
   };
@@ -68,7 +61,11 @@ const SearchBar = ({ onSearch, setDataReady }) => { // Add setDataReady prop
     <div className="search-bar-container">
       <div className="search-bar">
         {/* Dropdown populated with fetched planet names */}
-        <select className="dropdown" value={searchTerm} onChange={handleInputChange}>
+        <select 
+          className="dropdown" 
+          value={searchTerm} 
+          onChange={(e) => handleOptionSelect(e.target.value)}
+        >
           <option value="">Select</option>
           {options.map((option, index) => (
             <option key={index} value={option}>
@@ -116,21 +113,6 @@ const SearchBar = ({ onSearch, setDataReady }) => { // Add setDataReady prop
           )}
         </div>
       </div>
-
-      {/* Dropdown for filtered search options */}
-      {filteredOptions.length > 0 && (
-        <div className="dropdown-list">
-          {filteredOptions.map((option, index) => (
-            <div
-              key={index}
-              className="dropdown-option"
-              onClick={() => handleOptionClick(option)}
-            >
-              {option}
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 };

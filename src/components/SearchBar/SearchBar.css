@@ -1,6 +1,12 @@
 /* SearchBar.css */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
+.dropdown-option.highlight {
+  background-color: #00d1ff;
+  color: #000;
+}
+
+
 .search-bar-container {
   display: flex;
   justify-content: center;

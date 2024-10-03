@@ -1,16 +1,78 @@
 body {
-    background-color: #000000;
+  background-color: #000000;
 }
 
 .loading-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Full viewport height */
-  }
-  
-  .loading-container img {
-    margin: auto;
-    width: 100px; /* Adjust the width as needed */
-  height: auto; /* Maintain aspect ratio */
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+}
+
+.loading-container img {
+  margin: auto;
+  width: 100px; /* Adjust the width as needed */
+height: auto; /* Maintain aspect ratio */
+}
+
+.app-container {
+position: relative;
+}
+
+.intro-container {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: 10; /* Ensure intro is on top */
+background-color: rgba(255, 255, 255, 0.9); /* Optional: Add a semi-transparent background */
+}
+
+.blur-background {
+filter: blur(5px);
+pointer-events: none; /* Prevent interaction with blurred content */
+}
+
+.loading-container {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+}
+
+.draw-button {
+position: absolute;
+border: 2px solid #00d1ff; /* Border color to match sidebar */
+color: #00d1ff;
+top: 80px;
+right: 20px; /* Adjust this value to position at the right-most side */
+width: 60px;
+height: 60px;
+background-color: transparent;
+border: none;
+cursor: pointer;
+z-index: 15; /* Ensure the button is above other elements */
+}
+
+.draw-button img {
+width: 100%;
+height: 100%;
+}
+
+.draw-button {
+background-color: transparent; /* Transparent to match sidebar buttons */
+border: 2px solid #00d1ff; /* Border color to match sidebar */
+color: #00d1ff; /* Text color to match sidebar */
+padding: 6px 10px; /* Smaller padding for a smaller button */
+font-size: 14px; /* Reduced font size */
+cursor: pointer;
+margin-bottom: 10px; /* Reduced space below the button */
+border-radius: 5px; /* Rounded corners */
+transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+}
+
+.draw-button:hover {
+background-color: #00d1ff; /* Button color on hover */
+color: #000; /* Text color on hover */
+}

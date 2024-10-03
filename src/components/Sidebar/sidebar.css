@@ -1,198 +1,137 @@
 /* Sidebar.css */
 .sidebar {
-    position: fixed;
-    left: -300px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 300px;
-    height: 75vh;
-    background: linear-gradient(145deg, #111111, #1c1c3c);
-    border-radius: 10px;
-    transition: all 0.5s ease;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-    color: white;
-    z-index: 1000;
-  }
-  
-  .sidebar.open {
-    left: 0;
-  }
-  
-  .sidebar-content {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .sidebar-content h2 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 28px;
-    color: #00d1ff;
-    margin-bottom: 5px;
-  }
-  
-  .sidebar-content h3 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 16px;
-    color: #ffcc00;
-    margin-bottom: 30px;
-  }
-  
-  .menu-items {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-  
-  .menu-item {
-    background-color: transparent;
-    border: 2px solid #00d1ff;
-    color: #00d1ff;
-    padding: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    border-radius: 5px;
-    text-align: center;
-    font-family: 'Orbitron', sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-  
-  .menu-item:hover {
-    background-color: #00d1ff;
-    color: #000;
-  }
-  
-  .icons {
-    margin-top: 1px;
-    width: 100%;
-  }
-  
-  .icon {
-    background-color: transparent;
-    border: 2px solid #ffcc00;
-    color: #ffcc00;
-    padding: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    border-radius: 5px;
-    text-align: center;
-    font-family: 'Orbitron', sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-  
-  .icon:hover {
-    background-color: #ffcc00;
-    color: #000;
-  }
-  
-  .arrow-button {
-    position: absolute;
-    top: 50%;
-    right: -30px;
-    transform: translateY(-50%);
-    background-color: #00d1ff;
-    border: none;
-    color: #000;
-    padding: 10px 15px;
-    font-size: 24px;
-    cursor: pointer;
-    border-radius: 5px;
-    box-shadow: 0 0 15px #00d1ff;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .arrow-button:hover {
-    background-color: #00a3cc;
-    box-shadow: 0 0 20px #00d1ff;
-  }
- /* General Planet Info Styling */
+  position: fixed;
+  left: -300px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 300px;
+  height: 75vh;
+  background: linear-gradient(145deg, #111111, #1c1c3c);
+  border-radius: 10px;
+  transition: all 0.5s ease;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  color: white;
+  z-index: 1000;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar-content, .encyclopedia-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sidebar-content h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px;
+  color: #00d1ff;
+  margin-bottom: 5px;
+}
+
+.sidebar-content h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  color: #ffcc00;
+  margin-bottom: 30px;
+}
+
+.menu-items {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.menu-item {
+  background-color: transparent;
+  border: 2px solid #00d1ff;
+  color: #00d1ff;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.menu-item:hover {
+  background-color: #00d1ff;
+  color: #000;
+}
+
+.arrow-button {
+  position: absolute;
+  top: 50%;
+  right: -30px;
+  transform: translateY(-50%);
+  background-color: #00d1ff;
+  border: none;
+  color: #000;
+  padding: 10px 15px;
+  font-size: 24px;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 0 0 15px #00d1ff;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.arrow-button:hover {
+  background-color: #00a3cc;
+  box-shadow: 0 0 20px #00d1ff;
+}
+
+/* Encyclopedia content */
 .planet-info {
   font-family: 'Orbitron', sans-serif;
   color: #00d1ff;
   background: linear-gradient(145deg, #1c1c3c, #111111);
   padding: 20px;
   border-radius: 15px;
-  box-shadow: 0 0 10px rgba(0, 209, 255, 0.5); /* Reduced glow */
+  box-shadow: 0 0 10px rgba(0, 209, 255, 0.5);
   text-align: left;
   margin-top: 20px;
-  width: 300px; /* Match sidebar width */
+  width: 100%; /* Match sidebar width */
   height: 75vh; /* Match sidebar height */
-  overflow-y: auto; /* Enable scrolling if content exceeds height */
-  transition: all 0.3s ease-in-out;
+  overflow-y: auto;
 }
 
-.planet-info:hover {
-  box-shadow: 0 0 15px rgba(0, 209, 255, 0.2); /* Reduced glow on hover */
-  transform: scale(1.02);
-}
-
-/* Planet Name Styling */
 .planet-name {
-  font-size: 24px; /* Adjusted font size */
+  font-size: 24px;
   margin-bottom: 15px;
   color: #ffcc00;
-  text-shadow: 0 0 5px #000000; /* Reduced text shadow */
   border-bottom: 2px solid #00d1ff;
   padding-bottom: 10px;
 }
 
-/* Planet Details Styling */
 .planet-details {
-  font-size: 16px; /* Adjusted font size */
-  line-height: 1.6; /* Adjusted line height */
+  font-size: 16px;
+  line-height: 1.6;
   color: #b3b3b3;
 }
 
-.planet-details p {
-  margin-bottom: 10px;
-  position: relative;
-  padding-left: 10px;
-  transition: color 0.3s ease;
-}
-
-.planet-details p:hover {
-  color: #ffcc00; /* Retain hover color */
-}
-
-/* Label styling for details */
 .detail-label {
   font-weight: bold;
   color: #00d1ff;
-  text-shadow: 0 0 3px #000000; /* Reduced text shadow */
-  display: inline-block;
-  width: 200px;
 }
 
-/* Glowing Effects */
-.planet-details p:before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px; /* Reduced dot size */
-  height: 4px; /* Reduced dot size */
-  background: #00d1ff;
-  border-radius: 50%;
-  box-shadow: 0 0 5px rgba(0, 209, 255, 0.3); /* Reduced glow */
-}
 .back-btn {
-  background-color: transparent; /* No background color */
-  border: 2px solid #00d1ff; /* Border color */
-  color: #00d1ff; /* Text color */
-  padding: 10px 15px; /* Padding */
-  border-radius: 5px; /* Rounded corners */
-  font-size: 16px; /* Font size */
-  font-family: 'Orbitron', sans-serif; /* Font family */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease; /* Transition effects */
-  margin-bottom: 20px; /* Space below the button */
-  display: inline-block; /* Block for margin */
+  background-color: transparent;
+  border: 2px solid #00d1ff;
+  color: #00d1ff;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-family: 'Orbitron', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-bottom: 20px;
 }
 
 .back-btn:hover {
-  background-color: #00d1ff; /* Change background on hover */
-  color: #000; /* Change text color on hover */
-  box-shadow: 0 0 10px rgba(0, 209, 255, 0.5); /* Glowing effect on hover */
+  background-color: #00d1ff;
+  color: #000;
 }

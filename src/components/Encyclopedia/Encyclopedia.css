@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
 .encyclopedia-container {
-  padding: 20px;
+  padding: 15px; /* Reduced padding for smaller content size */
   background-color: #111; /* Dark background to match sidebar */
   color: #00d1ff; /* Text color to match sidebar */
   height: 100vh; /* Full height for the container */
@@ -13,10 +13,10 @@
   background-color: transparent; /* Transparent to match sidebar buttons */
   border: 2px solid #00d1ff; /* Border color to match sidebar */
   color: #00d1ff; /* Text color to match sidebar */
-  padding: 10px 15px;
-  font-size: 16px;
+  padding: 6px 10px; /* Smaller padding for a smaller button */
+  font-size: 14px; /* Reduced font size */
   cursor: pointer;
-  margin-bottom: 20px; /* Space below the button */
+  margin-bottom: 10px; /* Reduced space below the button */
   border-radius: 5px; /* Rounded corners */
   transition: background-color 0.3s, color 0.3s; /* Smooth transition */
 }
@@ -28,34 +28,34 @@
 
 .title {
   text-align: center; /* Center align title */
-  font-size: 24px; /* Increase title size */
-  margin-bottom: 20px; /* Space below title */
+  font-size: 22px; /* Slightly smaller title size */
+  margin-bottom: 15px; /* Reduced space below title */
 }
 
 h3 {
   text-align: left; /* Align subsection headings to the left */
-  margin-top: 20px; /* Space above subsection headings */
-  font-size: 20px; /* Adjust size for subsection headings */
+  margin-top: 15px; /* Reduced space above subsection headings */
+  font-size: 18px; /* Adjust size for subsection headings */
   color: #00d1ff; /* Match heading color to sidebar */
 }
 
 .encyclopedia-content {
-  max-width: 800px; /* Limit width for better readability */
+  max-width: 700px; /* Reduced width for better readability */
   margin: 0 auto; /* Center the content */
-  line-height: 1.6; /* Increase line height for better readability */
+  line-height: 1.4; /* Decreased line height for smaller content */
 }
 
 ul {
-  padding-left: 20px; /* Indent the list for better alignment */
+  padding-left: 15px; /* Indent the list for better alignment */
   list-style-type: disc; /* Bullet points for list */
 }
 
 li {
-  margin-bottom: 10px; /* Space between list items */
+  margin-bottom: 8px; /* Space between list items */
   color: #00d1ff; /* Match list item text color to sidebar */
 }
 
 p {
   color: #e0e0e0; /* Light gray for paragraphs */
-  margin-bottom: 15px; /* Space below paragraphs */
+  margin-bottom: 10px; /* Reduced space below paragraphs */
 }
