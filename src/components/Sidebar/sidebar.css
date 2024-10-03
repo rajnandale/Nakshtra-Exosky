@@ -106,4 +106,93 @@
     background-color: #00a3cc;
     box-shadow: 0 0 20px #00d1ff;
   }
-  
+ /* General Planet Info Styling */
+.planet-info {
+  font-family: 'Orbitron', sans-serif;
+  color: #00d1ff;
+  background: linear-gradient(145deg, #1c1c3c, #111111);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0, 209, 255, 0.5); /* Reduced glow */
+  text-align: left;
+  margin-top: 20px;
+  width: 300px; /* Match sidebar width */
+  height: 75vh; /* Match sidebar height */
+  overflow-y: auto; /* Enable scrolling if content exceeds height */
+  transition: all 0.3s ease-in-out;
+}
+
+.planet-info:hover {
+  box-shadow: 0 0 15px rgba(0, 209, 255, 0.2); /* Reduced glow on hover */
+  transform: scale(1.02);
+}
+
+/* Planet Name Styling */
+.planet-name {
+  font-size: 24px; /* Adjusted font size */
+  margin-bottom: 15px;
+  color: #ffcc00;
+  text-shadow: 0 0 5px #000000; /* Reduced text shadow */
+  border-bottom: 2px solid #00d1ff;
+  padding-bottom: 10px;
+}
+
+/* Planet Details Styling */
+.planet-details {
+  font-size: 16px; /* Adjusted font size */
+  line-height: 1.6; /* Adjusted line height */
+  color: #b3b3b3;
+}
+
+.planet-details p {
+  margin-bottom: 10px;
+  position: relative;
+  padding-left: 10px;
+  transition: color 0.3s ease;
+}
+
+.planet-details p:hover {
+  color: #ffcc00; /* Retain hover color */
+}
+
+/* Label styling for details */
+.detail-label {
+  font-weight: bold;
+  color: #00d1ff;
+  text-shadow: 0 0 3px #000000; /* Reduced text shadow */
+  display: inline-block;
+  width: 200px;
+}
+
+/* Glowing Effects */
+.planet-details p:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px; /* Reduced dot size */
+  height: 4px; /* Reduced dot size */
+  background: #00d1ff;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0, 209, 255, 0.3); /* Reduced glow */
+}
+.back-btn {
+  background-color: transparent; /* No background color */
+  border: 2px solid #00d1ff; /* Border color */
+  color: #00d1ff; /* Text color */
+  padding: 10px 15px; /* Padding */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 16px; /* Font size */
+  font-family: 'Orbitron', sans-serif; /* Font family */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease; /* Transition effects */
+  margin-bottom: 20px; /* Space below the button */
+  display: inline-block; /* Block for margin */
+}
+
+.back-btn:hover {
+  background-color: #00d1ff; /* Change background on hover */
+  color: #000; /* Change text color on hover */
+  box-shadow: 0 0 10px rgba(0, 209, 255, 0.5); /* Glowing effect on hover */
+}

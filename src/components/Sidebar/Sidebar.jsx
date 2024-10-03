@@ -41,11 +41,27 @@ const Sidebar = ({ selectedPlanet }) => {
           <button className="back-btn" onClick={handleBackToSidebar}>
             Back
           </button>
-          {planetInfo ? (
+          {/* {planetInfo ? (
             <pre>{JSON.stringify(planetInfo, null, 2)}</pre> // Display raw JSON data
           ) : (
             <p>Loading...</p>
-          )}
+          )} */}
+         {planetInfo ? (
+  <div className="planet-info">
+    <h3 className="planet-name">{planetInfo[0]?.pl_name}</h3>
+    <div className="planet-details">
+      <p><span className="detail-label">Right Ascension (RA):</span> {planetInfo[0]?.ra}</p>
+      <p><span className="detail-label">Declination (DEC):</span> {planetInfo[0]?.dec}</p>
+      <p><span className="detail-label">Distance:</span> {planetInfo[0]?.sy_dist} light years</p>
+      <p><span className="detail-label">Planet Mass:</span> {planetInfo[0]?.pl_masse} Earth masses</p>
+      <p><span className="detail-label">Orbital Semi-major Axis:</span> {planetInfo[0]?.pl_orbsmax} AU</p>
+      <p><span className="detail-label">Magnitude:</span> {planetInfo[0]?.sy_gaiamag}</p>
+    </div>
+  </div>
+) : (
+  <p>Loading...</p>
+)}
+
         </div>
       ) : (
         // Show default sidebar content when Encyclopedia is not open
@@ -57,11 +73,11 @@ const Sidebar = ({ selectedPlanet }) => {
             <button className="menu-item" onClick={openEncyclopedia}>ENCYCLOPEDIA</button> {/* Open Encyclopedia */}
             <button className="menu-item">STRUCTURE</button>
           </div>
-          <div className="icons">
+          {/* <div className="icons">
             <div className="menu-item">SWITCH PLANET</div>
             <div className="menu-item">NIGHT SKY</div>
             <div className="menu-item">SOLAR SYSTEM</div>
-          </div>
+          </div> */}
         </div>
       )}
 

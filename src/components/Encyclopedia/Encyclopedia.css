@@ -54,3 +54,8 @@ li {
   margin-bottom: 10px; /* Space between list items */
   color: #00d1ff; /* Match list item text color to sidebar */
 }
+
+p {
+  color: #e0e0e0; /* Light gray for paragraphs */
+  margin-bottom: 15px; /* Space below paragraphs */
+}
