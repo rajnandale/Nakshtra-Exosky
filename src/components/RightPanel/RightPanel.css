@@ -29,18 +29,6 @@
   height: 30px;
 }
 
-/* Update the existing .arrow-button styles */
-.arrow-button {
-  position: fixed;
-  top: 50%;
-  right: 20px; /* Ensure the button is positioned */
-  /* transform: translateY(-50%); */
-  background-color: transparent; /* Remove background color */
-  border: none; /* Remove the border */
-  padding: 0; /* Remove padding for a cleaner look */
-  cursor: pointer;
-  z-index: 1001; /* Ensure it stays on top of the panel */
-}
 /* Button styles remain unchanged */
 .draw-constellation-btn,
 .screenshot-btn,

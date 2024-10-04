@@ -102,7 +102,7 @@ const App = () => {
           </div>
         ) : (
           <>
-            <Sidebar selectedPlanet={selectedPlanet} isOpen={isSidebarOpen} /> {/* Pass isOpen to Sidebar */}
+            {/* <Sidebar selectedPlanet={selectedPlanet} isOpen={isSidebarOpen} /> Pass isOpen to Sidebar */}
             <div className="exoplanet-plot-section">
               {!plotReady ? (
                 <div className="loading-container">
@@ -110,13 +110,13 @@ const App = () => {
                 </div>
               ) : null}
               {/* Uncomment when ready to use */}
-              <ExoplanetPlot 
+              {/* <ExoplanetPlot 
                 exoplanetData={exoplanetData} 
                 starData={starData} 
                 onPlanetClick={handlePlanetClick} 
                 selectedPlanet={selectedPlanet} 
                 setPlotReady={setPlotReady} 
-              />
+              /> */}
             </div>
             <RightPanel 
               isConstellationMode={false} 
