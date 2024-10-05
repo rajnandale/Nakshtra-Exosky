@@ -9,7 +9,7 @@ const CAMERA_INITIAL_POSITION = { x: 0, y: 0, z: 5 };
 const PLANET_SCALE_FACTOR = 1;
 const STAR_SCALE_FACTOR = 1000;
 
-const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady }) => {
+const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, selectedStars, setSelectedStars }) => {
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const rendererRef = useRef(null);
@@ -34,12 +34,8 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady })
   useEffect(() => {
     if (!sceneRef.current) return;
     plotExoplanets();
-    plotStars()
-      .then(fetchAllStarsInfo)
-      .then(applyThemeToStars)
-      .then(() => {
-        setPlotReady(true); // Set plot ready after animation rendering is complete
-      });
+    plotStars();
+    setPlotReady(true); // Set plot ready after rendering is complete
   }, [exoplanetData, starData]);
 
   useEffect(() => {
@@ -97,12 +93,13 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady })
 
     if (intersects.length > 0) {
       const selected = intersects[0].object;
-      const planetName = selected.userData.planetName;
-      moveCameraToPlanet(selected);
-      updateLabel(planetName);
-      setViewPlanet(planetName); // Update global variable
-      if (onPlanetClick) {
-        onPlanetClick(planetName); // Call onPlanetClick with the selected planet name
+      if (selected.userData.starName) {
+        const starName = selected.userData.starName;
+        setSelectedStars((prevSelectedStars) => {
+          const newSelectedStars = new Set(prevSelectedStars);
+          newSelectedStars.add(starName);
+          return Array.from(newSelectedStars);
+        });
       }
     } else {
       if (labelRef.current) {
@@ -113,6 +110,7 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady })
 
   const moveCameraToPlanet = (planet) => {
     setShowSemicircle(false);
+    setSelectedStars([]);
     let progress = 0;
     const startPosition = cameraRef.current.position.clone();
 
@@ -175,80 +173,17 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady })
   };
 
   const plotStars = () => {
-    return Promise.all(starData.map((star) => {
-      return new Promise((resolve, reject) => {
-        if (typeof star.x === 'number' && typeof star.y === 'number' && typeof star.z === 'number') {
-          const geometry = new THREE.SphereGeometry(0.05, 24, 24); // Default star size, will be updated later
-          const material = new THREE.MeshBasicMaterial({ color: 0xffffff }); // Default white color
-          const starMesh = new THREE.Mesh(geometry, material);
-          starMesh.position.set(star.x * STAR_SCALE_FACTOR, star.y * STAR_SCALE_FACTOR, star.z * STAR_SCALE_FACTOR);
-          starMesh.userData.starName = star.star_name;
-          sceneRef.current.add(starMesh);
-          starsRef.current.push(starMesh);
-          resolve(starMesh);
-        } else {
-          console.warn('Invalid star position data:', star);
-          reject(new Error('Invalid star position data'));
-        }
-      });
-    }));
-  };
-
-  const fetchAllStarsInfo = () => {
-    return fetch('https://exoskyapi.vercel.app/get_all_stars')
-      .then((response) => response.json())
-      .then((data) => {
-        data.forEach((starInfo) => {
-          const star = starsRef.current.find(s => s.userData.starName === starInfo.star_name);
-          if (star) {
-            star.userData.info = starInfo;
-          }
-        });
-        return starsRef.current;
-      })
-      .catch((error) => {
-        console.error('Error fetching all stars info:', error);
-        return [];
-      });
-  };
-
-  const applyThemeToStars = (stars) => {
-    stars.forEach((star) => {
-      if (star && star.userData.info) {
-        const { spectral_type, color_index, magnitude } = star.userData.info;
-  
-        // Adjust size based on magnitude (smaller magnitude = larger star)
-        const scaleFactor = 1 / (magnitude + 1);
-        star.scale.set(scaleFactor, scaleFactor, scaleFactor);
-  
-        // Function to map spectral type (OBAFGKM) to a base color
-        const getColorFromSpectralType = (spectralType) => {
-          if (spectralType <= 30000) return 0x9bb0ff; // O-type (blue)
-          if (spectralType <= 10000) return 0xaabfff; // B-type (blue-white)
-          if (spectralType <= 7500) return 0xcad7ff;  // A-type (white)
-          if (spectralType <= 6000) return 0xf8f7ff;  // F-type (yellow-white)
-          if (spectralType <= 5200) return 0xfff4e8;  // G-type (yellow)
-          if (spectralType <= 3700) return 0xffddb4;  // K-type (orange)
-          return 0xffcc6f; // M-type (red)
-        };
-  
-        // Function to adjust the color based on color index (blue/red shift)
-        const adjustColorByIndex = (baseColor, colorIndex) => {
-          const color = new THREE.Color(baseColor);
-          color.offsetHSL(colorIndex / 10, 0, 0); // Adjust hue based on color index
-          return color;
-        };
-  
-        // Get base color from spectral type
-        const baseColor = getColorFromSpectralType(spectral_type);
-        // Apply color index adjustment
-        const color = adjustColorByIndex(baseColor, color_index);
-        star.material.color = color;
-  
-        // Adjust opacity based on magnitude (brighter stars are more opaque)
-        star.material.opacity = Math.min(1, 2 / (magnitude + 1));
-        star.material.transparent = true;
-        star.material.needsUpdate = true;
+    starData.forEach(({ star_name, x, y, z }) => {
+      if (typeof x === 'number' && typeof y === 'number' && typeof z === 'number') {
+        const geometry = new THREE.SphereGeometry(0.05, 24, 24); // Default star size
+        const material = new THREE.MeshBasicMaterial({ color: 0xffffff }); // Default white color
+        const starMesh = new THREE.Mesh(geometry, material);
+        starMesh.position.set(x * STAR_SCALE_FACTOR, y * STAR_SCALE_FACTOR, z * STAR_SCALE_FACTOR);
+        starMesh.userData.starName = star_name;
+        sceneRef.current.add(starMesh);
+        starsRef.current.push(starMesh);
+      } else {
+        console.warn('Invalid star position data:', { x, y, z });
       }
     });
   };
@@ -275,7 +210,7 @@ ExoplanetPlot.propTypes = {
   ).isRequired,
   starData: PropTypes.arrayOf(
     PropTypes.shape({
-      star_name: PropTypes.string.isRequired,
+      star_name: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
       x: PropTypes.number.isRequired,
       y: PropTypes.number.isRequired,
       z: PropTypes.number.isRequired,
@@ -283,6 +218,8 @@ ExoplanetPlot.propTypes = {
   ).isRequired,
   onPlanetClick: PropTypes.func,
   setPlotReady: PropTypes.func.isRequired,
+  selectedStars: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])).isRequired,
+  setSelectedStars: PropTypes.func.isRequired,
 };
 
 export default ExoplanetPlot;

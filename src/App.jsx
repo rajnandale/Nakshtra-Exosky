@@ -19,6 +19,7 @@ const App = () => {
   const [drawMode, setDrawMode] = useState(false);
   const [isRightPanelVisible, setRightPanelVisible] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // New state for sidebar visibility
+  const [selectedStars, setSelectedStars] = useState([]); // New state for selected stars
 
   const handleClose = () => {
     setShowIntro(false);
@@ -102,7 +103,7 @@ const App = () => {
           </div>
         ) : (
           <>
-            {/* <Sidebar selectedPlanet={selectedPlanet} isOpen={isSidebarOpen} /> Pass isOpen to Sidebar */}
+            <Sidebar selectedPlanet={selectedPlanet} isOpen={isSidebarOpen} /> Pass isOpen to Sidebar
             <div className="exoplanet-plot-section">
               {!plotReady ? (
                 <div className="loading-container">
@@ -116,17 +117,19 @@ const App = () => {
                 onPlanetClick={handlePlanetClick} 
                 selectedPlanet={selectedPlanet} 
                 setPlotReady={setPlotReady} 
+                selectedStars={selectedStars} // Pass selectedStars to ExoplanetPlot
+                setSelectedStars={setSelectedStars} // Pass setSelectedStars to ExoplanetPlot
+                drawMode={drawMode} // Pass drawMode to ExoplanetPlot
               /> */}
             </div>
             <RightPanel 
-              isConstellationMode={false} 
-              setIsConstellationMode={() => {}} 
               handleScreenshot={() => {}} 
-              drawConstellation={() => {}} 
-              selectedPlanets={[]} 
-              removePlanet={() => {}} 
-              resetConstellations={() => {}} 
+              selectedStars={selectedStars} // Pass selectedStars to RightPanel
+              removeStar={(star) => setSelectedStars(selectedStars.filter(s => s !== star))} // Remove star from selectedStars
+              resetConstellations={() => setSelectedStars([])} // Reset selectedStars
               isOpen={isRightPanelVisible} // Pass isOpen to RightPanel
+              setIsOpen={setRightPanelVisible} // Pass setIsOpen to RightPanel
+              setSelectedStars={setSelectedStars} // Pass setSelectedStars to RightPanel
             />
           </>
         )}
