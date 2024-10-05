@@ -6,13 +6,17 @@ const RightPanel = ({
   handleScreenshot, 
   selectedStars, 
   removeStar, 
-  resetConstellations,
+  resetConstellations = () => {}, // Default value for resetConstellations
+  resetNewConnect = () => {}, // Default value for resetNewConnect
   isOpen, 
   setIsOpen,
   setSelectedStars, // New function prop to update selectedStars
-  toggleDrawLines // New prop to toggle drawLines state
+  toggleDrawLines, // New prop to toggle drawLines state
+  savedStars = [], // Default value for savedStars
+  setSavedStars = () => {} // Default value for setSavedStars
 }) => {
-  const [nodesCount, setNodesCount] = useState(0); 
+  const [nodesCount, setNodesCount] = useState(0);
+  const [anotherConstellation, setAnotherConstellation] = useState(false); // New state for anotherConstellation
 
   // Update nodesCount whenever selectedStars changes
   useEffect(() => {
@@ -27,7 +31,20 @@ const RightPanel = ({
   // Handle the Reset button click
   const handleReset = () => {
     resetConstellations(); // Call the reset function passed in as prop
-    setSelectedStars([]); // Reset selectedStars to an empty array
+    setAnotherConstellation(false); // Set anotherConstellation to false
+  };
+
+  // Handle the Draw button click
+  const handleDraw = () => {
+    toggleDrawLines(); // Toggle drawLines prop
+    setAnotherConstellation(true); // Set anotherConstellation to true
+  };
+
+  // Handle the New Connect button click
+  const handleNewConnect = () => {
+    setSavedStars([...savedStars, ...selectedStars]); // Save current selectedStars
+    setSelectedStars([]); // Reset selectedStars
+    resetNewConnect();
   };
 
   return (
@@ -44,10 +61,19 @@ const RightPanel = ({
 
           <button 
             className="screenshot-btn" 
-            onClick={toggleDrawLines} // Toggle drawLines prop
+            onClick={handleDraw} // Update onClick to use handleDraw
           >
             Draw
           </button>
+
+          {anotherConstellation && (
+            <button 
+              className="screenshot-btn" 
+              onClick={handleNewConnect} // New button for New Connect
+            >
+              New Connect
+            </button>
+          )}
 
           <button 
             className="screenshot-btn"
@@ -69,6 +95,12 @@ const RightPanel = ({
       {/* Selected Stars List */}
       <h3>Selected Stars</h3>
       <ul className="selected-stars-list">
+        {savedStars.map((star, index) => (
+          <li key={index}>
+            <span>{star}</span>
+            <button disabled>Remove</button> {/* Disable remove button for saved stars */}
+          </li>
+        ))}
         {selectedStars.map((star, index) => (
           <li key={index}>
             <span>{star}</span>
@@ -84,11 +116,14 @@ RightPanel.propTypes = {
   handleScreenshot: PropTypes.func.isRequired,
   selectedStars: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])).isRequired,
   removeStar: PropTypes.func.isRequired,
-  resetConstellations: PropTypes.func.isRequired,
+  resetConstellations: PropTypes.func,
+  resetNewConnect: PropTypes.func,
   isOpen: PropTypes.bool.isRequired,
   setIsOpen: PropTypes.func.isRequired,
   setSelectedStars: PropTypes.func.isRequired, // New prop type for setSelectedStars
   toggleDrawLines: PropTypes.func.isRequired, // New prop for toggling drawLines
+  savedStars: PropTypes.array, // New prop type for savedStars
+  setSavedStars: PropTypes.func // New prop type for setSavedStars
 };
 
 export default RightPanel;

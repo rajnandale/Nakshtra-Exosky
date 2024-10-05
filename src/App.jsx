@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './App.css';
 import ExoplanetPlot from './components/ExoplanetPlot.jsx';
 import SearchBar from './components/SearchBar/SearchBar';
@@ -8,6 +8,7 @@ import IntroContainer from './components/IntroContainer/IntroContainer.jsx';
 import RightPanel from './components/RightPanel/RightPanel.jsx';
 import loadingImage from './assets/rocket_loading.png';
 import drawIcon from './assets/constillation.png';
+import { useSelectedStars } from './SelectedStarsContext';
 
 const App = () => {
   const [exoplanetData, setExoplanetData] = useState([]);
@@ -19,8 +20,11 @@ const App = () => {
   const [drawMode, setDrawMode] = useState(false);
   const [drawLines, setDrawLines] = useState(false); // New state for drawLines
   const [isRightPanelVisible, setRightPanelVisible] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
-  const [selectedStars, setSelectedStars] = useState([]); 
+  const { selectedStars, setSelectedStars } = useSelectedStars();
+  
+  // Using ref to keep reference to the reset function in ExoplanetPlot
+  const resetConstellationPointsRef = useRef(null);
+  const resetNewConnectRef = useRef(null);
 
   const handleClose = () => {
     setShowIntro(false);
@@ -73,6 +77,19 @@ const App = () => {
     setDrawLines(!drawLines); // Toggles drawLines state
   };
 
+  const handleResetConstellations = () => {
+    if (resetConstellationPointsRef.current) {
+      resetConstellationPointsRef.current(); // Calls the function from ExoplanetPlot
+    }
+    setSelectedStars([]); // Clear selected stars
+  };
+
+  const handleResetNewConnect = () => {
+    if (resetNewConnectRef.current) {
+      resetNewConnectRef.current(); // Calls the function from ExoplanetPlot
+    }
+  };
+
   return (
     <>
       <div className={`app-container ${showIntro ? 'blur-background' : ''}`}>
@@ -96,23 +113,25 @@ const App = () => {
                 exoplanetData={exoplanetData} 
                 starData={starData} 
                 onPlanetClick={handlePlanetClick} 
-                selectedPlanet={selectedPlanet} 
                 setPlotReady={setPlotReady} 
                 selectedStars={selectedStars} 
                 setSelectedStars={setSelectedStars} 
                 drawMode={drawMode} 
-                drawLines={drawLines} // Pass drawLines to ExoplanetPlot
+                drawLines={drawLines} 
+                resetConstellationPointsRef={resetConstellationPointsRef} // Pass ref to ExoplanetPlot
+                resetNewConnectRef={resetNewConnectRef}
               />
             </div>
             <RightPanel 
               handleScreenshot={() => {}} 
               selectedStars={selectedStars} 
               removeStar={(star) => setSelectedStars(selectedStars.filter(s => s !== star))} 
-              resetConstellations={() => setSelectedStars([])} 
+              resetConstellations={handleResetConstellations} // Call reset function
+              resetNewConnect={handleResetNewConnect} // Call reset function
               isOpen={isRightPanelVisible} 
               setIsOpen={setRightPanelVisible} 
               setSelectedStars={setSelectedStars} 
-              toggleDrawLines={toggleDrawLines} // Pass toggleDrawLines to RightPanel
+              toggleDrawLines={toggleDrawLines} 
             />
           </>
         )}

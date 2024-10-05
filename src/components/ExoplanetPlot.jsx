@@ -9,7 +9,7 @@ const CAMERA_INITIAL_POSITION = { x: 0, y: 0, z: 5 };
 const PLANET_SCALE_FACTOR = 1;
 const STAR_SCALE_FACTOR = 1000;
 
-const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, selectedStars, setSelectedStars, drawMode, drawLines }) => {
+const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, selectedStars, setSelectedStars, drawMode, drawLines, savedStars = [], setSavedStars = () => {}, resetConstellationPointsRef , resetNewConnectRef}) => {
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const rendererRef = useRef(null);
@@ -19,7 +19,8 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
   const labelRef = useRef(null);
   const [showSemicircle, setShowSemicircle] = useState(true);
   const [constellationPoints, setConstellationPoints] = useState([]);
-  const [lineMesh, setLineMesh] = useState(null); // Store the constellation lines
+  const lineMeshesRef = useRef([]); // Store all constellation lines
+  const [previousLines, setPreviousLines] = useState([]); // Store previously drawn lines
 
   useEffect(() => {
     if (exoplanetData.length === 0 && starData.length === 0) return;
@@ -55,6 +56,11 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
       drawConstellation();
     }
   }, [constellationPoints, drawLines]);  // Redraw lines when constellationPoints or drawLines change
+
+  useEffect(() => {
+    // Re-render previously drawn lines when the component mounts
+    previousLines.forEach(line => sceneRef.current.add(line));
+  }, [previousLines]);
 
   const initializeScene = () => {
     const scene = new THREE.Scene();
@@ -110,16 +116,16 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
           setConstellationPoints((prevPoints) => [...prevPoints, selected.position.clone()]);
 
           // Highlight the selected star
-          selected.material.emissive.set(0xff0000);
+          // selected.material.emissive.set(0xff0000);
         }
       }
     }
   };
 
   const drawConstellation = () => {
-    if (lineMesh) {
-      sceneRef.current.remove(lineMesh); // Remove previous lines if they exist
-    }
+    // Clear previous lines
+    lineMeshesRef.current.forEach(line => sceneRef.current.remove(line));
+    lineMeshesRef.current = [];
 
     const points = constellationPoints.map((point) => new THREE.Vector3(point.x, point.y, point.z));
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
@@ -127,7 +133,10 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
 
     const newLineMesh = new THREE.Line(lineGeometry, lineMaterial);
     sceneRef.current.add(newLineMesh);
-    setLineMesh(newLineMesh);  // Store the new line mesh
+    lineMeshesRef.current.push(newLineMesh);  // Store the new line mesh
+
+    // Save the new line to previousLines state
+    setPreviousLines((prevLines) => [...prevLines, newLineMesh]);
 
     rendererRef.current.render(sceneRef.current, cameraRef.current);
   };
@@ -212,6 +221,29 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
     });
   };
 
+  const handleResetConstellationPoints = () => {
+    setConstellationPoints([]);
+    setSavedStars([]);
+    setSelectedStars([]);
+    lineMeshesRef.current.forEach(line => sceneRef.current.remove(line)); // Remove all lines
+    lineMeshesRef.current = []; // Clear the line meshes array
+  };
+
+  const handleNewConnect = () =>{
+    setConstellationPoints([]);
+    setSelectedStars([]);
+  }
+
+  // Assign the internal reset function to the ref
+  useEffect(() => {
+    if (resetConstellationPointsRef) {
+      resetConstellationPointsRef.current = handleResetConstellationPoints;
+    }
+    if (resetNewConnectRef) {
+      resetNewConnectRef.current = handleNewConnect;
+    }
+  }, [resetConstellationPointsRef, resetNewConnectRef]);
+
   return (
     <>
       {cameraRef.current && rendererRef.current && (
@@ -231,6 +263,10 @@ ExoplanetPlot.propTypes = {
   setSelectedStars: PropTypes.func.isRequired,
   drawMode: PropTypes.bool.isRequired,
   drawLines: PropTypes.bool.isRequired,
+  savedStars: PropTypes.array, // New prop for savedStars
+  setSavedStars: PropTypes.func, // New prop for setSavedStars
+  resetConstellationPointsRef: PropTypes.object, // New prop for reset function ref
+  resetNewConnectRef: PropTypes.object, // New prop for reset function ref
 };
 
 export default ExoplanetPlot;
