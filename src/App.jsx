@@ -17,9 +17,10 @@ const App = () => {
   const [plotReady, setPlotReady] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const [drawMode, setDrawMode] = useState(false);
+  const [drawLines, setDrawLines] = useState(false); // New state for drawLines
   const [isRightPanelVisible, setRightPanelVisible] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // New state for sidebar visibility
-  const [selectedStars, setSelectedStars] = useState([]); // New state for selected stars
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
+  const [selectedStars, setSelectedStars] = useState([]); 
 
   const handleClose = () => {
     setShowIntro(false);
@@ -68,27 +69,9 @@ const App = () => {
     setRightPanelVisible(!isRightPanelVisible);
   };
 
-  // New function to toggle sidebar visibility
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
+  const toggleDrawLines = () => {
+    setDrawLines(!drawLines); // Toggles drawLines state
   };
-
-  // Handle keydown events
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === 'ArrowRight') {
-        toggleSidebar(); // Open the sidebar
-      } else if (event.key === 'ArrowLeft') {
-        toggleSidebar(); // Close the sidebar
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
 
   return (
     <>
@@ -103,33 +86,33 @@ const App = () => {
           </div>
         ) : (
           <>
-            {/* <Sidebar selectedPlanet={selectedPlanet} isOpen={isSidebarOpen} /> Pass isOpen to Sidebar */}
             <div className="exoplanet-plot-section">
               {!plotReady ? (
                 <div className="loading-container">
                   <img src={loadingImage} alt="Loading plot..." />
                 </div>
               ) : null}
-              {/* Uncomment when ready to use */}
               <ExoplanetPlot 
                 exoplanetData={exoplanetData} 
                 starData={starData} 
                 onPlanetClick={handlePlanetClick} 
                 selectedPlanet={selectedPlanet} 
                 setPlotReady={setPlotReady} 
-                selectedStars={selectedStars} // Pass selectedStars to ExoplanetPlot
-                setSelectedStars={setSelectedStars} // Pass setSelectedStars to ExoplanetPlot
-                drawMode={drawMode} // Pass drawMode to ExoplanetPlot
+                selectedStars={selectedStars} 
+                setSelectedStars={setSelectedStars} 
+                drawMode={drawMode} 
+                drawLines={drawLines} // Pass drawLines to ExoplanetPlot
               />
             </div>
             <RightPanel 
               handleScreenshot={() => {}} 
-              selectedStars={selectedStars} // Pass selectedStars to RightPanel
-              removeStar={(star) => setSelectedStars(selectedStars.filter(s => s !== star))} // Remove star from selectedStars
-              resetConstellations={() => setSelectedStars([])} // Reset selectedStars
-              isOpen={isRightPanelVisible} // Pass isOpen to RightPanel
-              setIsOpen={setRightPanelVisible} // Pass setIsOpen to RightPanel
-              setSelectedStars={setSelectedStars} // Pass setSelectedStars to RightPanel
+              selectedStars={selectedStars} 
+              removeStar={(star) => setSelectedStars(selectedStars.filter(s => s !== star))} 
+              resetConstellations={() => setSelectedStars([])} 
+              isOpen={isRightPanelVisible} 
+              setIsOpen={setRightPanelVisible} 
+              setSelectedStars={setSelectedStars} 
+              toggleDrawLines={toggleDrawLines} // Pass toggleDrawLines to RightPanel
             />
           </>
         )}

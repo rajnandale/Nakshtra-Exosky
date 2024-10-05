@@ -9,9 +9,9 @@ const RightPanel = ({
   resetConstellations,
   isOpen, 
   setIsOpen,
-  setSelectedStars // New function prop to update selectedStars
+  setSelectedStars, // New function prop to update selectedStars
+  toggleDrawLines // New prop to toggle drawLines state
 }) => {
-  // Default nodesCount value
   const [nodesCount, setNodesCount] = useState(0); 
 
   // Update nodesCount whenever selectedStars changes
@@ -33,13 +33,20 @@ const RightPanel = ({
   return (
     <div className={`right-panel ${isOpen ? 'open' : 'closed'}`}>
       {/* Display content based on nodesCount */}
-      {nodesCount > 2 && (
+      {nodesCount >= 2 && (
         <div>
           <button 
             className="screenshot-btn" 
             onClick={handleScreenshot}
           >
             Save
+          </button>
+
+          <button 
+            className="screenshot-btn" 
+            onClick={toggleDrawLines} // Toggle drawLines prop
+          >
+            Draw
           </button>
 
           <button 
@@ -81,6 +88,7 @@ RightPanel.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   setIsOpen: PropTypes.func.isRequired,
   setSelectedStars: PropTypes.func.isRequired, // New prop type for setSelectedStars
+  toggleDrawLines: PropTypes.func.isRequired, // New prop for toggling drawLines
 };
 
 export default RightPanel;

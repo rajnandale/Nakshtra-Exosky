@@ -9,7 +9,7 @@ const CAMERA_INITIAL_POSITION = { x: 0, y: 0, z: 5 };
 const PLANET_SCALE_FACTOR = 1;
 const STAR_SCALE_FACTOR = 1000;
 
-const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, selectedStars, setSelectedStars, drawMode }) => {
+const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, selectedStars, setSelectedStars, drawMode, drawLines }) => {
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const rendererRef = useRef(null);
@@ -19,6 +19,7 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
   const labelRef = useRef(null);
   const [showSemicircle, setShowSemicircle] = useState(true);
   const [constellationPoints, setConstellationPoints] = useState([]);
+  const [lineMesh, setLineMesh] = useState(null); // Store the constellation lines
 
   useEffect(() => {
     if (exoplanetData.length === 0 && starData.length === 0) return;
@@ -30,7 +31,7 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
   useEffect(() => {
     window.addEventListener('click', handleMouseClick);
     return () => window.removeEventListener('click', handleMouseClick);
-  }, [drawMode]);  // Ensure drawMode is updated on mouse click
+  }, [drawMode]);
 
   useEffect(() => {
     if (!sceneRef.current) return;
@@ -48,6 +49,12 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
       }
     }
   }, [ViewPlanet]);
+
+  useEffect(() => {
+    if (drawLines && constellationPoints.length >= 2) {
+      drawConstellation();
+    }
+  }, [constellationPoints, drawLines]);  // Redraw lines when constellationPoints or drawLines change
 
   const initializeScene = () => {
     const scene = new THREE.Scene();
@@ -80,21 +87,6 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
     rendererRef.current = null;
   };
 
-  const drawConstellation = () => {
-    if (constellationPoints.length < 2) return; // At least 2 points are required to draw a line
-    
-    // Create a line geometry from the points
-    const geometry = new THREE.BufferGeometry().setFromPoints(constellationPoints);
-    const material = new THREE.LineBasicMaterial({ color: 0xffff00 });
-    const line = new THREE.Line(geometry, material);
-
-    // Add the line to the scene
-    sceneRef.current.add(line);
-
-    // Save the drawn line for possible future updates/removals
-    setConstellationLines((prevLines) => [...prevLines, line]);
-  };
-
   const handleMouseClick = (event) => {
     if (!cameraRef.current || !sceneRef.current || !drawMode) return;
 
@@ -114,23 +106,30 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
         const starName = selected.userData.starName;
 
         if (!selectedStars.includes(starName)) {
-          // Add the star to the selectedStars and store its position
           setSelectedStars((prevSelectedStars) => [...prevSelectedStars, starName]);
           setConstellationPoints((prevPoints) => [...prevPoints, selected.position.clone()]);
 
           // Highlight the selected star
           selected.material.emissive.set(0xff0000);
-
-          // Draw the constellation dynamically whenever points are updated
-          drawConstellation();
         }
       }
-    } else {
-      // Hide the label if no object is clicked
-      if (labelRef.current) {
-        labelRef.current.style.display = 'none';
-      }
     }
+  };
+
+  const drawConstellation = () => {
+    if (lineMesh) {
+      sceneRef.current.remove(lineMesh); // Remove previous lines if they exist
+    }
+
+    const points = constellationPoints.map((point) => new THREE.Vector3(point.x, point.y, point.z));
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 }); // Yellow line
+
+    const newLineMesh = new THREE.Line(lineGeometry, lineMaterial);
+    sceneRef.current.add(newLineMesh);
+    setLineMesh(newLineMesh);  // Store the new line mesh
+
+    rendererRef.current.render(sceneRef.current, cameraRef.current);
   };
 
   const moveCameraToPlanet = (planet) => {
@@ -223,29 +222,15 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
   );
 };
 
-// PropTypes validation
 ExoplanetPlot.propTypes = {
-  exoplanetData: PropTypes.arrayOf(
-    PropTypes.shape({
-      planet_name: PropTypes.string.isRequired,
-      x: PropTypes.number.isRequired,
-      y: PropTypes.number.isRequired,
-      z: PropTypes.number.isRequired,
-    })
-  ).isRequired,
-  starData: PropTypes.arrayOf(
-    PropTypes.shape({
-      star_name: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      x: PropTypes.number.isRequired,
-      y: PropTypes.number.isRequired,
-      z: PropTypes.number.isRequired,
-    })
-  ).isRequired,
-  onPlanetClick: PropTypes.func,
+  exoplanetData: PropTypes.array.isRequired,
+  starData: PropTypes.array.isRequired,
+  onPlanetClick: PropTypes.func.isRequired,
   setPlotReady: PropTypes.func.isRequired,
-  selectedStars: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])).isRequired,
+  selectedStars: PropTypes.array.isRequired,
   setSelectedStars: PropTypes.func.isRequired,
-  drawMode: PropTypes.bool.isRequired, // Added new prop
+  drawMode: PropTypes.bool.isRequired,
+  drawLines: PropTypes.bool.isRequired,
 };
 
 export default ExoplanetPlot;
