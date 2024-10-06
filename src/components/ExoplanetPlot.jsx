@@ -62,6 +62,13 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
     previousLines.forEach(line => sceneRef.current.add(line));
   }, [previousLines]);
 
+  useEffect(() => {
+    if (!drawMode) {
+      window.addEventListener('mousemove', handleMouseHover);
+      return () => window.removeEventListener('mousemove', handleMouseHover);
+    }
+  }, [drawMode]);
+
   const initializeScene = () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 500);
@@ -122,6 +129,31 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
     }
   };
 
+  const handleMouseHover = (event) => {
+    if (!cameraRef.current || !sceneRef.current) return;
+  
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2(
+      (event.clientX / window.innerWidth) * 2 - 1,
+      -(event.clientY / window.innerHeight) * 2 + 1
+    );
+    raycaster.setFromCamera(mouse, cameraRef.current);
+  
+    const intersects = raycaster.intersectObjects(sceneRef.current.children);
+  
+    if (intersects.length > 0) {
+      const hovered = intersects[0].object;
+  
+      if (hovered.userData.starName) {
+        updateLabel(hovered.userData.starName);
+      } else {
+        hideLabel();
+      }
+    } else {
+      hideLabel();
+    }
+  };
+
   const drawConstellation = () => {
     // Clear previous lines
     lineMeshesRef.current.forEach(line => sceneRef.current.remove(line));
@@ -164,7 +196,7 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
     controlsRef.current.update();
   };
 
-  const updateLabel = (planetName) => {
+  const updateLabel = (name) => {
     let labelDiv = labelRef.current;
 
     if (!labelDiv) {
@@ -181,11 +213,17 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
       labelRef.current = labelDiv;
     }
 
-    labelDiv.textContent = planetName;
+    labelDiv.textContent = name;
     labelDiv.style.display = 'block';
     labelDiv.style.left = '50%';
     labelDiv.style.bottom = '20px';
     labelDiv.style.transform = 'translateX(-50%)';
+  };
+
+  const hideLabel = () => {
+    if (labelRef.current) {
+      labelRef.current.style.display = 'none';
+    }
   };
 
   const plotExoplanets = () => {
@@ -227,12 +265,14 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
     setSelectedStars([]);
     lineMeshesRef.current.forEach(line => sceneRef.current.remove(line)); // Remove all lines
     lineMeshesRef.current = []; // Clear the line meshes array
+    previousLines.forEach(line => sceneRef.current.remove(line)); // Remove previous lines
+    setPreviousLines([]); // Clear the previous lines array
   };
 
-  const handleNewConnect = () =>{
+  const handleNewConnect = () => {
     setConstellationPoints([]);
     setSelectedStars([]);
-  }
+  };
 
   // Assign the internal reset function to the ref
   useEffect(() => {
