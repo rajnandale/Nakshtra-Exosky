@@ -9,7 +9,7 @@ const CAMERA_INITIAL_POSITION = { x: 0, y: 0, z: 5 };
 const PLANET_SCALE_FACTOR = 1;
 const STAR_SCALE_FACTOR = 1000;
 
-const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, selectedStars, setSelectedStars, drawMode, drawLines, savedStars = [], setSavedStars = () => {}, resetConstellationPointsRef , resetNewConnectRef}) => {
+const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, selectedStars, setSelectedStars, drawMode, drawLines,toggleDrawMode, savedStars = [], setSavedStars = () => {}, resetConstellationPointsRef , resetNewConnectRef, }) => {
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const rendererRef = useRef(null);
@@ -124,6 +124,8 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
 
           // Highlight the selected star
           // selected.material.emissive.set(0xff0000);
+          // toggleDrawMode()
+          
         }
       }
     }
@@ -310,3 +312,4 @@ ExoplanetPlot.propTypes = {
 };
 
 export default ExoplanetPlot;
+//surprise

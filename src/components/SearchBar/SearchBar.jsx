@@ -75,14 +75,14 @@ const SearchBar = ({ onSearch, setDataReady }) => { // Add setDataReady prop
         </select>
 
         {/* Search input */}
-        <input
+        {/* <input
           type="text"
           className="search-input"
           value={searchTerm}
           onChange={handleInputChange}
           placeholder="Search..."
         />
-        <button className="search-button" onClick={handleSearch}>Search</button>
+        <button className="search-button" onClick={handleSearch}>Search</button> */}
 
         {/* Profile section */}
         <div>

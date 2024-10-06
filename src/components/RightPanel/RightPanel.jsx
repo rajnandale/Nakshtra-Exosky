@@ -66,14 +66,14 @@ const RightPanel = ({
             Draw
           </button>
 
-          {anotherConstellation && (
+          {/* {anotherConstellation && (
             <button 
               className="screenshot-btn" 
               onClick={handleNewConnect} // New button for New Connect
             >
               New Connect
             </button>
-          )}
+          )} */}
 
           <button 
             className="screenshot-btn"

@@ -103,6 +103,7 @@ const App = () => {
           </div>
         ) : (
           <>
+          <Sidebar selectedPlanet={selectedPlanet} />
             <div className="exoplanet-plot-section">
               {!plotReady ? (
                 <div className="loading-container">
@@ -117,6 +118,7 @@ const App = () => {
                 selectedStars={selectedStars} 
                 setSelectedStars={setSelectedStars} 
                 drawMode={drawMode} 
+                toggleDrawMode={toggleDrawMode}
                 drawLines={drawLines} 
                 resetConstellationPointsRef={resetConstellationPointsRef} // Pass ref to ExoplanetPlot
                 resetNewConnectRef={resetNewConnectRef}
