@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import './Sidebar.css'; // Import the CSS for styling
+import './sidebar.css'; // Import the CSS for styling
 import Encyclopedia from '../Encyclopedia/Encyclopedia.jsx';  // Import the Encyclopedia component
 import PropTypes from 'prop-types'; // Import PropTypes
 
