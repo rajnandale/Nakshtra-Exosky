@@ -2,6 +2,7 @@
 
 ![Website Preview](./Demo/Home.png)
 [Instruction for Exploration](./Demo/EXOSKY_DEMO.pdf)
+[Project Details](./Demo/ExoskyDetails.pdf)
 
 ## Overview
 
@@ -16,7 +17,7 @@
 
 ## Project Details
 
-This project was created for the NASA Space Apps Challenge 2024 with team Yara.
+This project was created by Team YARA for the NASA Space Apps Challenge 2024 and Presented/Developed During Local Event of Hackathon at Nashik.
 
 You can find more details about the challenge and our submission here:
 [Exosky - NASA Space Apps 2024](https://www.spaceappschallenge.org/nasa-space-apps-2024/find-a-team/yara/?tab=project)
@@ -25,6 +26,7 @@ You can find more details about the challenge and our submission here:
 
 - **Frontend**: React, Three.js
 - **Backend**: Flask API
+- **Database**: MongoDB
 - **Deployment**: [Vercel: Nakshtra-Exosky](https://nakshtra-exosky.vercel.app)
 
 ## Installation
