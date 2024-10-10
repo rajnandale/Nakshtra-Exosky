@@ -1,7 +1,7 @@
 # Exosky - Night Sky Exploration Website
 
 ![Website Preview](./Demo/Home.png)
-[Instruction for Exploration](./Demo/EXOSKY DEMO.png)
+[Instruction for Exploration](./Demo/EXOSKY_DEMO.pdf)
 
 ## Overview
 
