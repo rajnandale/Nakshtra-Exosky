@@ -115,9 +115,9 @@ const App = () => {
           setDataReady={setDataReady} 
           exoplanetNames={exoplanetNames} 
         />
-        <button className="draw-button" onClick={toggleDrawMode}>
+        {/* <button className="draw-button" onClick={toggleDrawMode}>
           <img src={drawIcon} alt="Draw Mode" />
-        </button>
+        </button> */}
         {!dataReady ? (
           <div className="loading-container">
             <img src={loadingImage} alt="Loading..." />
@@ -145,7 +145,7 @@ const App = () => {
                 resetNewConnectRef={resetNewConnectRef}
               />
             </div>
-            <RightPanel 
+            {/* <RightPanel 
               handleScreenshot={() => {}} 
               selectedStars={selectedStars} 
               removeStar={(star) => setSelectedStars(selectedStars.filter(s => s !== star))} 
@@ -155,7 +155,7 @@ const App = () => {
               setIsOpen={setRightPanelVisible} 
               setSelectedStars={setSelectedStars} 
               toggleDrawLines={toggleDrawLines} 
-            />
+            /> */}
           </>
         )}
       </div>

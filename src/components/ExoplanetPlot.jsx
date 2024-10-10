@@ -3,13 +3,15 @@ import * as THREE from 'three';
 import CameraControls from './CameraControls.jsx';
 import Semicircle from './semicircle/Semicircle.jsx';
 import PropTypes from 'prop-types';
+import drawIcon from '../assets/constillation.png';
 import { ViewPlanet, setViewPlanet } from '../global'; // Import global variable and setter
+import RightPanel from './RightPanel/RightPanel.jsx';
 
 const CAMERA_INITIAL_POSITION = { x: 0, y: 0, z: 5 };
 const PLANET_SCALE_FACTOR = 1;
 const STAR_SCALE_FACTOR = 1000;
 
-const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, selectedStars, setSelectedStars, drawMode, drawLines,toggleDrawMode, savedStars = [], setSavedStars = () => {}, resetConstellationPointsRef , resetNewConnectRef, }) => {
+const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, selectedStars, setSelectedStars, savedStars = [], setSavedStars = () => {}, resetConstellationPointsRef , resetNewConnectRef, }) => {
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const rendererRef = useRef(null);
@@ -21,6 +23,27 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
   const [constellationPoints, setConstellationPoints] = useState([]);
   const lineMeshesRef = useRef([]); // Store all constellation lines
   const [previousLines, setPreviousLines] = useState([]); // Store previously drawn lines
+  const [drawMode, setDrawMode] = useState(false);
+  const [drawLines, setDrawLines] = useState(false);
+  const [isRightPanelVisible, setRightPanelVisible] = useState(false);
+  const [selectedPlanet, setSelectedPlanet] = useState(ViewPlanet);
+
+  useEffect(() => {
+    setSelectedPlanet(ViewPlanet);
+  }, [ViewPlanet]);
+  // Handle planet clicks
+  const handlePlanetClick = (planetName) => {
+    setViewPlanet(planetName);
+    setSelectedPlanet(planetName);
+  };
+  const toggleDrawMode = () => {
+    setDrawMode(!drawMode);
+    setRightPanelVisible(!isRightPanelVisible);
+  };
+  const toggleDrawLines = () => {
+    setDrawLines(!drawLines); // Toggles drawLines state
+  };
+
 
   useEffect(() => {
     if (exoplanetData.length === 0 && starData.length === 0) return;
@@ -286,12 +309,62 @@ const ExoplanetPlot = ({ exoplanetData, starData, onPlanetClick, setPlotReady, s
     }
   }, [resetConstellationPointsRef, resetNewConnectRef]);
 
+    // Function to take a screenshot
+    const handleScreenshot = () => {
+      if (!rendererRef.current || !sceneRef.current || !cameraRef.current) return;
+  
+      // Hide UI elements (buttons, labels) during the screenshot
+      const buttonsDiv = document.querySelector(
+        'div[style*="position: absolute; top: 10px"]'
+      );
+      const selectedPlanetsDiv = document.querySelector(
+        'div[style*="position: absolute; top: 100px"]'
+      );
+  
+      if (buttonsDiv) buttonsDiv.style.display = "none";
+      if (selectedPlanetsDiv) selectedPlanetsDiv.style.display = "none";
+  
+      // Render the scene again to ensure it is up-to-date
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+  
+      // Get the Three.js canvas from the renderer
+      const canvas = rendererRef.current.domElement;
+  
+      // Convert the Three.js canvas content to a data URL (PNG format)
+      const dataURL = canvas.toDataURL("image/png");
+  
+      // Create a link element to download the screenshot
+      const link = document.createElement("a");
+      link.href = dataURL;
+      link.download = "constellation_space_screenshot.png"; // File name for the screenshot
+      link.click(); // Simulate a click to download the screenshot
+  
+      // Restore the visibility of the UI elements
+      if (buttonsDiv) buttonsDiv.style.display = "block";
+      if (selectedPlanetsDiv) selectedPlanetsDiv.style.display = "block";
+    };
+
   return (
     <>
+     <button className="draw-button" onClick={toggleDrawMode}>
+        <img src={drawIcon} alt="Draw Mode" />
+      </button>
       {cameraRef.current && rendererRef.current && (
         <CameraControls camera={cameraRef.current} renderer={rendererRef.current} controlsRef={controlsRef} />
       )}
       {showSemicircle && <Semicircle />}
+      <RightPanel
+        handleScreenshot={handleScreenshot}
+        selectedStars={selectedStars}
+        removeStar={(star) =>
+          setSelectedStars(selectedStars.filter((s) => s !== star))
+        }
+        resetConstellations={() => setSelectedStars([])}
+        isOpen={isRightPanelVisible}
+        setIsOpen={setRightPanelVisible}
+        setSelectedStars={setSelectedStars}
+        toggleDrawLines={toggleDrawLines} // Pass toggleDrawLines to RightPanel
+      />
     </>
   );
 };
