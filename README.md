@@ -2,7 +2,7 @@
 
 ![Website Preview](./Demo/Home.png)
 [Instruction for Exploration](./Demo/EXOSKY_DEMO.pdf)
-[Project Details](./Demo/ExoskyDetails.pdf)
+|| [Project Details](./Demo/ExoskyDetails.pdf)
 
 ## Overview
 
