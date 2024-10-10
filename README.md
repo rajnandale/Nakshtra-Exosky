@@ -24,7 +24,7 @@ You can find more details about the challenge and our submission here:
 
 - **Frontend**: React, Three.js
 - **Backend**: Flask API
-- **Deployment**: [Nakshtra-Exosky](https://nakshtra-exosky.vercel.app)
+- **Deployment**: [Vercel: Nakshtra-Exosky](https://nakshtra-exosky.vercel.app)
 
 ## Installation
 
