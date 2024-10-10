@@ -6,13 +6,16 @@ import Sidebar from './components/Sidebar/Sidebar';
 import { ViewPlanet, setViewPlanet } from './global';
 import IntroContainer from './components/IntroContainer/IntroContainer.jsx';
 import RightPanel from './components/RightPanel/RightPanel.jsx';
-import loadingImage from './assets/rocket_loading.png';
-import drawIcon from './assets/constillation.png';
 import { useSelectedStars } from './SelectedStarsContext';
+
+// Import images
+import loadingImage from '/src/assets/rocket_loading.png';
+import drawIcon from '/src/assets/constillation.png';
 
 const App = () => {
   const [exoplanetData, setExoplanetData] = useState([]);
   const [starData, setStarData] = useState([]);
+  const [exoplanetNames, setExoplanetNames] = useState([]); // New state for planet names
   const [selectedPlanet, setSelectedPlanet] = useState(ViewPlanet);
   const [dataReady, setDataReady] = useState(false);
   const [plotReady, setPlotReady] = useState(false);
@@ -21,8 +24,7 @@ const App = () => {
   const [drawLines, setDrawLines] = useState(false); // New state for drawLines
   const [isRightPanelVisible, setRightPanelVisible] = useState(false);
   const { selectedStars, setSelectedStars } = useSelectedStars();
-  
-  // Using ref to keep reference to the reset function in ExoplanetPlot
+
   const resetConstellationPointsRef = useRef(null);
   const resetNewConnectRef = useRef(null);
 
@@ -30,39 +32,53 @@ const App = () => {
     setShowIntro(false);
   };
 
+  // Centralized data fetching logic
   useEffect(() => {
-    fetch('https://exoskyapi.vercel.app/get_objects')
-      .then((response) => response.json())
-      .then((data) => {
-        const exoplanetData = data
-          .filter((item) => item.object_type === 'exoplanet')
-          .map((planet) => ({
-            planet_name: planet.name,
-            x: planet.x,
-            y: planet.y,
-            z: planet.z,
-          }));
+    const fetchExoplanetData = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/get_objects`);
+        const data = await response.json();
+
+        const exoplanetData = data.filter(item => item.object_type === 'exoplanet').map(planet => ({
+          planet_name: planet.name,
+          x: planet.x,
+          y: planet.y,
+          z: planet.z,
+        }));
         setExoplanetData(exoplanetData);
 
-        const starData = data
-          .filter((item) => item.object_type === 'star')
-          .map((star) => ({
-            star_name: star.name,
-            x: star.x,
-            y: star.y,
-            z: star.z,
-          }));
+        const starData = data.filter(item => item.object_type === 'star').map(star => ({
+          star_name: star.name,
+          x: star.x,
+          y: star.y,
+          z: star.z,
+        }));
         setStarData(starData);
         setDataReady(true);
-      })
-      .catch((error) => console.error('Error fetching data:', error));
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    const fetchExoplanetNames = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/get_planets_names`);
+        const data = await response.json();
+        const sortedData = data.sort((a, b) => a.localeCompare(b));
+        setExoplanetNames(sortedData);
+      } catch (error) {
+        console.error('Error fetching exoplanet names:', error);
+      }
+    };
+
+    fetchExoplanetData();
+    fetchExoplanetNames();
   }, []);
 
   useEffect(() => {
     setSelectedPlanet(ViewPlanet);
   }, [ViewPlanet]);
 
-  // Handle planet clicks
   const handlePlanetClick = (planetName) => {
     setViewPlanet(planetName);
     setSelectedPlanet(planetName);
@@ -74,26 +90,30 @@ const App = () => {
   };
 
   const toggleDrawLines = () => {
-    setDrawLines(!drawLines); // Toggles drawLines state
+    setDrawLines(!drawLines);
   };
 
   const handleResetConstellations = () => {
     if (resetConstellationPointsRef.current) {
-      resetConstellationPointsRef.current(); // Calls the function from ExoplanetPlot
+      resetConstellationPointsRef.current();
     }
-    setSelectedStars([]); // Clear selected stars
+    setSelectedStars([]);
   };
 
   const handleResetNewConnect = () => {
     if (resetNewConnectRef.current) {
-      resetNewConnectRef.current(); // Calls the function from ExoplanetPlot
+      resetNewConnectRef.current();
     }
   };
 
   return (
     <>
       <div className={`app-container ${showIntro ? 'blur-background' : ''}`}>
-        <SearchBar onSearch={handlePlanetClick} setDataReady={setDataReady} />
+        <SearchBar 
+          onSearch={handlePlanetClick} 
+          setDataReady={setDataReady} 
+          exoplanetNames={exoplanetNames} 
+        />
         <button className="draw-button" onClick={toggleDrawMode}>
           <img src={drawIcon} alt="Draw Mode" />
         </button>
@@ -103,7 +123,7 @@ const App = () => {
           </div>
         ) : (
           <>
-          <Sidebar selectedPlanet={selectedPlanet} />
+            <Sidebar selectedPlanet={selectedPlanet} />
             <div className="exoplanet-plot-section">
               {!plotReady ? (
                 <div className="loading-container">
@@ -120,7 +140,7 @@ const App = () => {
                 drawMode={drawMode} 
                 toggleDrawMode={toggleDrawMode}
                 drawLines={drawLines} 
-                resetConstellationPointsRef={resetConstellationPointsRef} // Pass ref to ExoplanetPlot
+                resetConstellationPointsRef={resetConstellationPointsRef}
                 resetNewConnectRef={resetNewConnectRef}
               />
             </div>
@@ -128,8 +148,8 @@ const App = () => {
               handleScreenshot={() => {}} 
               selectedStars={selectedStars} 
               removeStar={(star) => setSelectedStars(selectedStars.filter(s => s !== star))} 
-              resetConstellations={handleResetConstellations} // Call reset function
-              resetNewConnect={handleResetNewConnect} // Call reset function
+              resetConstellations={handleResetConstellations} 
+              resetNewConnect={handleResetNewConnect} 
               isOpen={isRightPanelVisible} 
               setIsOpen={setRightPanelVisible} 
               setSelectedStars={setSelectedStars} 

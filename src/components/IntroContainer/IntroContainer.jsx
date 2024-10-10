@@ -2,22 +2,27 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import '../IntroContainer/IntroContainer.css';
 
+// Import images
+import nightsky1 from '/src/assets/intro/nightsky1-resized.png';
+import exo3 from '/src/assets/intro/EXO3-resized.png';
+import cons2 from '/src/assets/intro/cons2-resized.png';
+
 const IntroContainer = ({ onClose }) => {
   const [currentPage, setCurrentPage] = useState(0);
 
   const pages = [
     {
-      imageSrc: '/src/assets/intro/nightsky1-resized.png',
+      imageSrc: nightsky1,
       description: `Look up at the night sky! From Earth, you'll see stars twinkling and maybe even a planet or two. 
                     There's always something amazing to spot. Let's start our sky adventure!`,
     },
     {
-      imageSrc: '/src/assets/intro/EXO3-resized.png',
+      imageSrc: exo3,
       description: `What if you were on a faraway planet? The sky might have two or more suns, or stars you’ve never seen before. 
                     Imagine what their sunsets would look like! Let's explore the skies from other worlds!`,
     },
     {
-      imageSrc: '/src/assets/intro/cons2-resized.png',
+      imageSrc: cons2,
       description: `Stars make fun patterns called constellations. You can create your own too! 
                     Look at the stars, connect them in your mind, and name your new constellation. What will you come up with?`,
     },

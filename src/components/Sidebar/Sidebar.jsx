@@ -26,7 +26,8 @@ const Sidebar = ({ selectedPlanet }) => {  // Add selectedPlanet as a prop
   // Fetch planet info when selectedPlanet changes
   useEffect(() => {
     if (selectedPlanet) {
-      fetch(`https://exoskyapi.vercel.app/get_exoplanets_info?planet_name=${selectedPlanet}`)
+      const apiUrl = import.meta.env.VITE_BACKEND_URL; // Default URL if not set
+      fetch(`${apiUrl}/get_exoplanets_info?planet_name=${selectedPlanet}`)
         .then((response) => response.json())
         .then((data) => setPlanetInfo(data))
         .catch((error) => console.error('Error fetching planet info:', error));
@@ -39,8 +40,8 @@ const Sidebar = ({ selectedPlanet }) => {  // Add selectedPlanet as a prop
         <Encyclopedia planetInfo={planetInfo} onBack={handleBackToSidebar} />  // Pass planetInfo to Encyclopedia
       ) : (
         <div className="sidebar-content">
-          <h2>{selectedPlanet || 'SUN'}</h2>  {/* Display selected planet or default to SUN */}
-          <h3>YELLOW DWARF</h3>
+          <h2>{selectedPlanet || 'EARTH'}</h2>  {/* Display selected planet or default to SUN */}
+          <h3>Planet</h3>
           <div className="menu-items">
             <button className="menu-item">VISIT</button>
             <button className="menu-item" onClick={openEncyclopedia}>ENCYCLOPEDIA</button>
