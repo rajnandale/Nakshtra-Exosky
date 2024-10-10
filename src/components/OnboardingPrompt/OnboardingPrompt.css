@@ -1,0 +1,37 @@
+.onboarding-prompt {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8d347;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #000;
+    animation: blink-animation 1s infinite;
+  }
+  
+  .prompt-arrow {
+    width: 0; 
+    height: 0; 
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #f8d347;
+    margin-bottom: -10px; /* So it connects to the prompt box */
+  }
+  
+  .prompt-content {
+    background-color: #f8d347;
+    padding: 10px;
+    border-radius: 4px;
+  }
+  
+  /* Blinking animation */
+  @keyframes blink-animation {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+  
