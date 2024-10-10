@@ -13,6 +13,7 @@ import loadingImage from '/src/assets/rocket_loading.png';
 import drawIcon from '/src/assets/constillation.png';
 
 const App = () => {
+  const apiUrl = import.meta.env.VITE_BACKEND_URL; // Centralized API URL constant
   const [exoplanetData, setExoplanetData] = useState([]);
   const [starData, setStarData] = useState([]);
   const [exoplanetNames, setExoplanetNames] = useState([]); // New state for planet names
@@ -36,7 +37,7 @@ const App = () => {
   useEffect(() => {
     const fetchExoplanetData = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/get_objects`);
+        const response = await fetch(`${apiUrl}/get_objects`);
         const data = await response.json();
 
         const exoplanetData = data.filter(item => item.object_type === 'exoplanet').map(planet => ({
@@ -62,7 +63,7 @@ const App = () => {
 
     const fetchExoplanetNames = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/get_planets_names`);
+        const response = await fetch(`${apiUrl}/get_planets_names`);
         const data = await response.json();
         const sortedData = data.sort((a, b) => a.localeCompare(b));
         setExoplanetNames(sortedData);
@@ -73,7 +74,7 @@ const App = () => {
 
     fetchExoplanetData();
     fetchExoplanetNames();
-  }, []);
+  }, [apiUrl]);
 
   useEffect(() => {
     setSelectedPlanet(ViewPlanet);
