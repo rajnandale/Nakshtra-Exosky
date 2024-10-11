@@ -35,8 +35,8 @@ To run the project locally:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/exosky.git
-   cd exosky
+   git clone https://github.com/rajnandale/Nakshtra-Exosky.git
+   cd Nakshtra-Exosky
    npm i
    npm run dev
   Note : It requires Backend API url which is part of environment variables. If u wanted to have Backend URL then contact at mail6164@duck.com
