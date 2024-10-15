@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/a87f0bb0-72dd-45c6-b117-3edb565d3de5) # Exosky - Night Sky Exploration Website
+# Exosky - Night Sky Exploration Website
 
 ![Website Preview](./Demo/Home.png)
 [Instruction for Exploration](./Demo/EXOSKY_DEMO.pdf)
@@ -39,4 +39,4 @@ To run the project locally:
    cd Nakshtra-Exosky
    npm i
    npm run dev
-  Note : It requires environment variable for backend_url thus use {{https://exoskyapi.vercel.app}}
+  Note : It requires environment variable for backend_url thus use https://exoskyapi.vercel.app
